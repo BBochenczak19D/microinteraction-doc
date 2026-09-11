@@ -1,0 +1,34 @@
+/* Tokeny na potrzeby dokumentacji. W docelowym projekcie te wartości
+ * przychodzą z design systemu — tutaj są zadeklarowane lokalnie, żeby
+ * strona działała samodzielnie. */
+
+:root {
+  --backgrounds-bg-component: #fafafa;
+  --backgrounds-bg-component-hover: rgba(0, 0, 0, 0.04);
+  --backgrounds-bg-subtle: #f4f4f5;
+
+  --foregrounds-fg-base: #18181b;
+  --foregrounds-fg-muted: #71717a;
+  --foregrounds-fg-success: #16a34a;
+
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --radius-8: 8px;
+  --font-size-small: 13px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: var(--family-body), system-ui, sans-serif;
+}

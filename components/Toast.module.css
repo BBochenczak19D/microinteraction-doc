@@ -1,0 +1,92 @@
+/* Toast — style z tokenów design systemu Estigroup.
+ * Fallbacki = wartości zmierzone w Figmie (node 2116:26967).
+ * Jeśli w projekcie zmienne eksportują się z ukośnikiem
+ * (np. --backgrounds\/bg-component), podmieńcie nazwy poniżej. */
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--spacing-8, 8px);
+  padding: var(--spacing-12, 12px);
+
+  width: fit-content;
+  max-width: 420px; /* w Figmie tekst jest jednoliniowy (hug); tu zawija się po przekroczeniu */
+
+  background: var(--backgrounds-bg-component, #fafafa);
+  border-radius: var(--radius-8, 8px);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.08),
+    0 4px 8px 0 rgba(0, 0, 0, 0.2),
+    0 8px 24px 0 rgba(0, 0, 0, 0.08);
+  overflow: clip;
+}
+
+.iconSlot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.icon {
+  display: block;
+  width: 20px;
+  height: 20px;
+  /* TODO: podmienić na token statusu, gdy potwierdzimy nazwę */
+  color: var(--foregrounds-fg-success, #16a34a);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+/* Text Compact / txt-compact-small-plus */
+.text {
+  margin: 0;
+  font-family: var(--family-body, 'Montserrat', system-ui, sans-serif);
+  font-weight: 600;
+  font-size: var(--font-size-small, 13px);
+  line-height: 20px;
+  letter-spacing: 0;
+  color: var(--foregrounds-fg-base, #18181b);
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.closeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 2.5px; /* 15px ikona + 2 × 2.5px = 20px pole klikalne */
+  border: 0;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0);
+  color: var(--foregrounds-fg-muted, #71717a);
+  cursor: pointer;
+  overflow: clip;
+  transition: background-color 120ms ease-out;
+}
+
+.closeButton:hover {
+  background: var(--backgrounds-bg-component-hover, rgba(0, 0, 0, 0.04));
+}
+
+.closeButton:focus-visible {
+  outline: 2px solid var(--foregrounds-fg-base, #18181b);
+  outline-offset: 1px;
+}
+
+.closeIcon {
+  display: block;
+  width: 15px;
+  height: 15px;
+}
