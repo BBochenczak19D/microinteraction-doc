@@ -36,17 +36,21 @@ Strona: http://localhost:3000
 ## Struktura
 
 - `app/page.tsx` — cała treść w tablicy `COMPONENTS` (komponent → animacje) i tabela stylu animacji.
-  Z niej powstają sekcje strony, menu w sidebarze i indeks wyszukiwarki.
+  Z niej powstają sekcje strony, menu w sidebarze (same nazwy komponentów) i indeks wyszukiwarki.
 - `components/motion-docs/MotionEntry.tsx` — sekcja jednej animacji: podgląd, tabela, snippet, uwagi.
 - `components/motion-docs/Sidebar.tsx` — menu, lista komponentów, wyszukiwarka; poniżej 960 px szuflada.
 - `components/motion-docs/search.ts` — logika wyszukiwania.
-- `components/motion-docs/demos/` — podglądy do sceny (toast, Select, menu akcji, paginacja).
-- `components/motion.ts` — wspólny styl animacji (czasy, krzywe, dystans, skala); te same wartości
-  jako zmienne CSS `--motion-*` w `app/globals.css`.
+- `components/motion-docs/demos/` — podglądy do sceny (toast, Select, menu akcji, paginacja,
+  segment control, date picker).
+- `components/motion.ts` — wspólny styl animacji (czasy, krzywe, dystans, skala) i gotowe przepisy:
+  `popoverMotion`, `swapMotion`, `viewMotion`, `moveTransition`; te same wartości jako zmienne CSS
+  `--motion-*` w `app/globals.css`.
 - `components/Toast.tsx` — komponent produkcyjny, specyfikacja animacji w komentarzu na górze.
 - `components/Menu.tsx` — panel menu rozwijanego i specyfikacja jego animacji (warianty Select i Button).
 - `components/Select.tsx`, `components/MenuButton.tsx` — komponenty, które otwierają to menu.
 - `components/Pagination.tsx` — paginacja (Default, Compact, Mini) ze specyfikacją animacji.
+- `components/SegmentedControl.tsx` — segment control (2–4 opcje, marki Uniwersal, Estigroup, Estimoto).
+- `components/DatePicker.tsx` — pole z kalendarzem (dni, miesiące, lata); `Calendar` działa też osobno.
 - `components/icons.tsx` — ikony Medusa UI wyeksportowane z Figmy (nie ma ich w heroicons).
 
 ## Styl animacji
@@ -62,7 +66,9 @@ zniknięcie krótsze od pojawienia się:
 | zmiana stanu (hover, fokus) | 150 ms · ease-out |
 | dystans / skala | 2 px / 0.98 → 1 |
 
-Nowa animacja bez danych z Figmy bierze wartości z `components/motion.ts`, nie wymyśla własnych.
+Nowa animacja bez danych z Figmy bierze wartości i przepisy z `components/motion.ts`, nie wymyśla
+własnych: warstwa nad treścią — `popoverMotion`, zamiana treści w miejscu — `swapMotion`, zmiana
+widoku — `viewMotion`, przesuwane tło zaznaczenia — `moveTransition` z `layoutId`.
 Toast ma wartości z eksportu Figmy i zostaje przy nich.
 
 ## Dodanie kolejnej animacji
@@ -101,3 +107,5 @@ Ignoruje wielkość liter i polskie znaki („znikniecie” = „Zniknięcie”,
 | Menu — Select | pojawienie się, zamknięcie | propozycja, wspólny styl | wygląd: Design System, strona Select (81:993) |
 | Menu — Button | pojawienie się, zamknięcie | propozycja, wspólny styl | tło przycisku z tokenów DS; 10% przy otwartym menu z Figmy |
 | Paginacja | zmiana strony, przesunięcie zakresu, stany | propozycja + stany z Figmy (903:635) | zakres Default: strona ±1 |
+| Segment control | przełączenie, stany i marki | propozycja + stany z Figmy (349:757) | tło przejeżdża jak w paginacji |
+| Date picker | otwarcie, zmiana miesiąca, wybór dnia, miesiące i lata | propozycja + stany z Figmy (94:13340) | hover nagłówka z tokenu DS (w Figmie brak) |

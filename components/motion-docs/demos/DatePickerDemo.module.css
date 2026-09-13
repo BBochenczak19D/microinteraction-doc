@@ -1,0 +1,25 @@
+.demo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+/* Kalendarz jest absolutny i nie rozpycha sceny: pole 44 + odstęp 8 + kalendarz 336 */
+.popoverSlot {
+  display: flex;
+  justify-content: center;
+  width: 307px;
+  max-width: 100%;
+  min-height: 388px;
+}
+
+.hint {
+  margin: 0;
+  min-height: 16px;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--foregrounds-fg-muted, #71717a);
+  text-align: center;
+}

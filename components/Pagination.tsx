@@ -1,9 +1,9 @@
 'use client';
 
-import { AnimatePresence, motion, useReducedMotion, type Variants } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useId, useRef, useState } from 'react';
 
-import { DISTANCE, DURATION, EASE_IN, EASE_OUT, moveTransition } from './motion';
+import { moveTransition, swapMotion, swapMotionReduced } from './motion';
 import styles from './Pagination.module.css';
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -18,7 +18,7 @@ import styles from './Pagination.module.css';
  *   tło aktywnej strony jedzie do nowej | 250 ms, cubic-bezier(0.22, 1, 0.36, 1)
  *   kolor numeru (ciemny ↔ biały)       | 250 ms, ta sama krzywa (CSS)
  *
- * Przesunięcie zakresu (gdy zmieniają się widoczne numery):
+ * Przesunięcie zakresu (gdy zmieniają się widoczne numery) — przepis swapMotion:
  *   przyciski stoją w miejscu (key = pozycja), zmieniają się tylko numery
  *   nowy numer  : opacity 0 → 1 (200 ms), x ±2 px → 0 (250 ms), ease-out
  *   stary numer : opacity → 0, x → ∓2 px, 150 ms, ease-in
@@ -54,29 +54,6 @@ export function getSlots(page: number, pageCount: number, variant: PaginationVar
   if (page >= pageCount - 3) return [1, 'ellipsis', ...range(pageCount - 4, pageCount)];
   return [1, 'ellipsis', page - 1, page, page + 1, 'ellipsis', pageCount];
 }
-
-const labelMotion: Variants = {
-  enter: (direction: number) => ({ opacity: 0, x: DISTANCE * direction }),
-  center: {
-    opacity: 1,
-    x: 0,
-    transition: {
-      opacity: { duration: DURATION.fade, ease: EASE_OUT },
-      x: { duration: DURATION.enter, ease: EASE_OUT },
-    },
-  },
-  exit: (direction: number) => ({
-    opacity: 0,
-    x: -DISTANCE * direction,
-    transition: { duration: DURATION.exit, ease: EASE_IN },
-  }),
-};
-
-const labelMotionReduced: Variants = {
-  enter: { opacity: 0 },
-  center: { opacity: 1, transition: { duration: DURATION.fade, ease: EASE_OUT } },
-  exit: { opacity: 0, transition: { duration: DURATION.exit, ease: EASE_IN } },
-};
 
 export type PaginationProps = {
   /** Bieżąca strona, od 1. */
@@ -166,7 +143,7 @@ export default function Pagination({
                       key={pageNumber ?? 'ellipsis'}
                       className={styles.labelText}
                       custom={direction}
-                      variants={prefersReducedMotion ? labelMotionReduced : labelMotion}
+                      variants={prefersReducedMotion ? swapMotionReduced : swapMotion}
                       initial="enter"
                       animate="center"
                       exit="exit"

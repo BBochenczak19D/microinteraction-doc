@@ -4,8 +4,10 @@ import { Fragment, type ReactNode } from 'react';
 
 import MotionEntry, { type MotionParam } from '@/components/motion-docs/MotionEntry';
 import Sidebar, { type NavGroup } from '@/components/motion-docs/Sidebar';
+import DatePickerDemo from '@/components/motion-docs/demos/DatePickerDemo';
 import MenuButtonDemo from '@/components/motion-docs/demos/MenuButtonDemo';
 import PaginationDemo from '@/components/motion-docs/demos/PaginationDemo';
+import SegmentedControlDemo from '@/components/motion-docs/demos/SegmentedControlDemo';
 import SelectDemo from '@/components/motion-docs/demos/SelectDemo';
 import ToastDemo from '@/components/motion-docs/demos/ToastDemo';
 import { nodeToText, type SearchDoc } from '@/components/motion-docs/search';
@@ -50,12 +52,12 @@ const MOTION_STYLE_SUMMARY =
   'Wspólne wartości dla komponentów, które w Figmie nie mają animacji: subtelnie, bez sprężyn, zniknięcie krótsze od pojawienia się. Element wjeżdża albo rośnie od strony, z której przychodzi.';
 
 const MOTION_STYLE: MotionParam[] = [
-  { property: 'pojawienie się, ruch', value: '250 ms · cubic-bezier(0.22, 1, 0.36, 1)', source: 'menu, tło aktywnej strony, numery paginacji' },
-  { property: 'fade przy pojawieniu', value: '200 ms · ta sama krzywa', source: 'menu, numery paginacji' },
-  { property: 'zniknięcie', value: '150 ms · cubic-bezier(0.4, 0, 1, 1)', source: 'menu, numery paginacji' },
+  { property: 'pojawienie się, ruch', value: '250 ms · cubic-bezier(0.22, 1, 0.36, 1)', source: 'menu, kalendarz, tło aktywnej strony, segmentu i dnia' },
+  { property: 'fade przy pojawieniu', value: '200 ms · ta sama krzywa', source: 'menu, kalendarz, numery paginacji, miesiące i widoki kalendarza' },
+  { property: 'zniknięcie', value: '150 ms · cubic-bezier(0.4, 0, 1, 1)', source: 'menu, kalendarz, numery paginacji, miesiące i widoki kalendarza' },
   { property: 'zmiana stanu', value: '150 ms · cubic-bezier(0.22, 1, 0.36, 1)', source: 'hover, fokus, wciśnięcie' },
-  { property: 'dystans', value: '2 px', source: 'menu (y), numery paginacji (x)' },
-  { property: 'skala', value: '0.98 → 1', source: 'menu' },
+  { property: 'dystans', value: '2 px', source: 'menu i kalendarz (y), numery paginacji i miesiące (x)' },
+  { property: 'skala', value: '0.98 → 1', source: 'menu, kalendarz, widoki miesięcy i lat' },
   { property: 'prefers-reduced-motion', value: 'bez ruchu, same fade’y w tych samych czasach', source: 'wszystkie' },
 ];
 
@@ -261,6 +263,151 @@ const PAGINATION_STATES_CODE = `.item,
   color: var(--foregrounds-fg-subtle, #52525b);
   cursor: default;
 }`;
+
+/* ── Segment control ── */
+
+const DS_SEGMENT_FIGMA_URL =
+  'https://www.figma.com/design/LorGLqilmfYrIQp72jTOHB/Design-System?node-id=349-757';
+
+const SEGMENT_SWITCH_CODE = `// tło aktywnego segmentu: jeden element, który przejeżdża do wybranej opcji
+<div role="radiogroup" className="control">
+  {options.map((option) => (
+    <button key={option.value} role="radio" aria-checked={option.value === value} className="item">
+      {option.value === value && (
+        <motion.span
+          layoutId={indicatorId} // useId() — osobne dla każdej kontrolki na stronie
+          className="indicator" // position: absolute; inset: 0; background: var(--backgrounds-bg-field-component)
+          transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+        />
+      )}
+      <option.icon className="icon" />
+      <span className="label">{option.label}</span>
+    </button>
+  ))}
+</div>
+
+// .item { transition: color 250ms cubic-bezier(0.22, 1, 0.36, 1); }
+// .icon, .label { position: relative; } — nad tłem`;
+
+const SEGMENT_STATES_CODE = `.item:hover:not(:disabled) {
+  color: var(--foregrounds-fg-base, #18181b);
+  transition-duration: 150ms;
+}
+
+.indicator {
+  transition: background-color 150ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Active Hover / Active Pressed — Uniwersal */
+.item:hover .indicator {
+  background: var(--backgrounds-bg-field-component-hover, #fafafa);
+}
+
+.item:active .indicator {
+  background: var(--backgrounds-bg-base-pressed, #e4e4e7);
+  transition-duration: 0s;
+}
+
+/* Estigroup */
+.control[data-brand='estigroup'] .indicator {
+  background: var(--backgrounds-bg-interactive, #3582ce);
+}
+
+.control[data-brand='estigroup'] .item:hover .indicator {
+  background: var(--backgrounds-bg-interactive-hover, #0069a8);
+}
+
+.control[data-brand='estigroup'] .item:active .indicator {
+  background: var(--backgrounds-bg-interactive-pressed, #00598a);
+}`;
+
+/* ── Date picker ── */
+
+const DS_DATEPICKER_FIGMA_URL =
+  'https://www.figma.com/design/LorGLqilmfYrIQp72jTOHB/Design-System?node-id=94-13340';
+
+const DATEPICKER_OPEN_CODE = `// ten sam przepis co menu — popoverMotion w components/motion.ts
+const EASE_OUT = [0.22, 1, 0.36, 1];
+
+// .popover { position: absolute; top: calc(100% + 8px); left: 0; transform-origin: top left; }
+<AnimatePresence initial={false}>
+  {isOpen && (
+    <motion.div
+      key="calendar"
+      role="dialog"
+      className="popover"
+      initial={{ opacity: 0, y: -2, scale: 0.98 }}
+      animate={{
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        transition: { opacity: { duration: 0.2, ease: EASE_OUT }, default: { duration: 0.25, ease: EASE_OUT } },
+      }}
+      exit={{ opacity: 0, y: -2, scale: 0.98, transition: { duration: 0.15, ease: [0.4, 0, 1, 1] } }}
+    >
+      <Calendar … />
+    </motion.div>
+  )}
+</AnimatePresence>`;
+
+const DATEPICKER_MONTH_CODE = `// swapMotion w components/motion.ts; custom = kierunek: 1 następny miesiąc, −1 poprzedni
+const swapMotion = {
+  enter: (dir) => ({ opacity: 0, x: 2 * dir }),
+  center: {
+    opacity: 1,
+    x: 0,
+    pointerEvents: 'auto',
+    transition: {
+      opacity: { duration: 0.2, ease: [0.22, 1, 0.36, 1] },
+      x: { duration: 0.25, ease: [0.22, 1, 0.36, 1] },
+    },
+  },
+  exit: (dir) => ({ opacity: 0, x: -2 * dir, pointerEvents: 'none', transition: { duration: 0.15, ease: [0.4, 0, 1, 1] } }),
+};
+
+// stary i nowy miesiąc w tej samej komórce grid — nakładają się, a wysokość stoi (zawsze 6 tygodni)
+<div style={{ display: 'grid' }}>
+  <AnimatePresence initial={false} custom={dir}>
+    <motion.div key={monthKey} style={{ gridArea: '1 / 1' }} custom={dir} variants={swapMotion} initial="enter" animate="center" exit="exit">
+      {weeks}
+    </motion.div>
+  </AnimatePresence>
+</div>`;
+
+const DATEPICKER_DAY_CODE = `// tło wybranego dnia: jeden element, który przejeżdża do nowego dnia
+<button data-selected={isSelected} className="cell">
+  {isSelected && (
+    <motion.span
+      layoutId={\`\${calendarId}-day-\${monthKey}\`} // miesiąc w id — tło nie przelatuje między miesiącami
+      className="selected" // position: absolute; inset: 0; background: var(--backgrounds-bg-interactive)
+      transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+    />
+  )}
+  <span className="label">{day}</span>
+</button>
+
+// .label { transition: color 250ms cubic-bezier(0.22, 1, 0.36, 1); }
+// .cell:hover:not([data-selected='true']) { background: var(--backgrounds-bg-base-hover); transition: background-color 150ms; }`;
+
+const DATEPICKER_VIEW_CODE = `// viewMotion w components/motion.ts — nowy widok dorasta z 0.98, stary gaśnie
+const EASE_OUT = [0.22, 1, 0.36, 1];
+const viewMotion = {
+  enter: { opacity: 0, scale: 0.98 },
+  center: {
+    opacity: 1,
+    scale: 1,
+    pointerEvents: 'auto',
+    transition: { opacity: { duration: 0.2, ease: EASE_OUT }, default: { duration: 0.25, ease: EASE_OUT } },
+  },
+  exit: { opacity: 0, pointerEvents: 'none', transition: { duration: 0.15, ease: [0.4, 0, 1, 1] } },
+};
+
+// dni, miesiące i lata mają tę samą wysokość (272 px) i leżą w jednej komórce grid
+<AnimatePresence initial={false}>
+  <motion.div key={view} style={{ gridArea: '1 / 1' }} variants={viewMotion} initial="enter" animate="center" exit="exit">
+    {view === 'days' ? <Days /> : view === 'months' ? <Months /> : <Years />}
+  </motion.div>
+</AnimatePresence>`;
 
 const COMPONENTS: DocComponent[] = [
   {
@@ -566,6 +713,195 @@ const COMPONENTS: DocComponent[] = [
       },
     ],
   },
+  {
+    id: 'segment-control',
+    name: 'Segment control',
+    summary:
+      'Przełącznik jednej z kilku opcji (Segmented control z design systemu, 2–4 opcje), np. widok listy, kafelków albo mapy.',
+    files: ['components/SegmentedControl.tsx', 'components/motion.ts'],
+    keywords: ['segmented control', 'przełącznik', 'zakładki', 'tabs', 'toggle'],
+    entries: [
+      {
+        id: 'segment-przelaczenie',
+        title: 'Przełączenie',
+        description:
+          'Po kliknięciu opcji tło aktywnego segmentu przejeżdża pod nią, a etykiety płynnie zamieniają kolory — tak samo jak tło aktywnej strony w paginacji.',
+        figmaNode: '349:757',
+        figmaUrl: DS_SEGMENT_FIGMA_URL,
+        params: [
+          { property: 'tło aktywnego segmentu', value: 'przesunięcie do wybranej opcji · 250 ms · cubic-bezier(0.22, 1, 0.36, 1)', source: 'propozycja' },
+          { property: 'kolor etykiety i ikony', value: '#71717a ↔ #18181b · 250 ms · ta sama krzywa', source: 'propozycja (kolory: Figma)' },
+          { property: 'tło (Uniwersal)', value: '#ffffff + cień card-rest', source: 'Figma' },
+          { property: 'trigger', value: 'klik · strzałki ← → ↑ ↓ · Home / End', source: 'decyzja FE' },
+          { property: 'prefers-reduced-motion', value: 'tło przeskakuje bez ruchu', source: 'a11y' },
+        ],
+        code: SEGMENT_SWITCH_CODE,
+        notes: (
+          <>
+            <p>
+              <strong>W Figmie segment control nie ma animacji</strong> — wartości to propozycja we wspólnym
+              stylu (sekcja „Styl animacji”), ten sam przepis co tło aktywnej strony w paginacji.
+            </p>
+            <p>
+              Tło to jeden element z <code>layoutId</code>; każda kontrolka na stronie potrzebuje własnego id
+              (<code>useId()</code>). Dostępność: <code>radiogroup</code> — Tab wchodzi na wybraną opcję,
+              strzałki zmieniają wybór.
+            </p>
+          </>
+        ),
+        keywords: ['przełączenie', 'wybór', 'radiogroup', 'layoutId', 'wskaźnik'],
+        preview: <SegmentedControlDemo mode="switch" />,
+      },
+      {
+        id: 'segment-stany',
+        title: 'Hover, wciśnięcie i marki',
+        description:
+          'Stany z Figmy z łagodnymi przejściami: ciemniejsza etykieta przy najechaniu, jaśniejsze albo ciemniejsze tło aktywnego segmentu przy najechaniu i wciśnięciu oraz trzy warianty marki.',
+        figmaNode: '349:757',
+        figmaUrl: DS_SEGMENT_FIGMA_URL,
+        params: [
+          { property: 'hover', value: 'etykieta #71717a → #18181b · 150 ms', source: 'Figma (kolor) · propozycja (czas)' },
+          { property: 'hover aktywnego', value: 'tło #fafafa · Estigroup #0069a8 · Estimoto #fefce8 · 150 ms', source: 'Figma (Active Hover) · propozycja (czas)' },
+          { property: 'wciśnięcie aktywnego', value: 'tło #e4e4e7 · Estigroup #00598a · Estimoto #fef9c2 · od razu, powrót 150 ms', source: 'Figma (Active Pressed) · propozycja (czas)' },
+          { property: 'wyłączona opcja', value: 'etykieta #a1a1aa, bez hover', source: 'Figma (Disabled)' },
+          { property: 'marki', value: 'Uniwersal — białe tło · Estigroup — #3582ce · Estimoto — ramka #f8af38', source: 'Figma' },
+        ],
+        code: SEGMENT_STATES_CODE,
+        notes: (
+          <p>
+            Ramka kontenera jest rysowana cieniem w środku (<code>inset 0 0 0 1px</code>), żeby padding 4 px i
+            wysokość 40 px zgadzały się z Figmą. Kolumny są równe i dopasowane do najdłuższej etykiety, minimum
+            320 px.
+          </p>
+        ),
+        keywords: ['hover', 'pressed', 'disabled', 'marka', 'estigroup', 'estimoto', 'uniwersal'],
+        preview: <SegmentedControlDemo mode="states" />,
+      },
+    ],
+  },
+  {
+    id: 'date-picker',
+    name: 'Date picker',
+    summary:
+      'Pole z kalendarzem do wyboru jednej daty (Date Picker z design systemu): pole Large i kalendarz 296 × 336 z widokami miesięcy i lat.',
+    files: ['components/DatePicker.tsx', 'components/motion.ts'],
+    keywords: ['kalendarz', 'data', 'datepicker', 'calendar'],
+    entries: [
+      {
+        id: 'date-picker-otwarcie',
+        title: 'Otwarcie i zamknięcie',
+        description:
+          'Kalendarz wysuwa się spod pola tak samo jak menu: pojawia się, opada o 2 px i dorasta z 98% od lewego górnego rogu. Zamyka się po wyborze dnia, kliknięciu poza nim albo Esc.',
+        figmaNode: '94:13340',
+        figmaUrl: DS_DATEPICKER_FIGMA_URL,
+        params: [
+          { property: 'opacity', value: '0 → 1 · 200 ms · ease-out', source: 'propozycja' },
+          { property: 'y', value: '−2 px → 0', source: 'propozycja' },
+          { property: 'scale', value: '0.98 → 1', source: 'propozycja' },
+          { property: 'y, scale — timing', value: '250 ms · cubic-bezier(0.22, 1, 0.36, 1)', source: 'propozycja' },
+          { property: 'zamknięcie', value: '150 ms · cubic-bezier(0.4, 0, 1, 1) — do wartości startowych', source: 'propozycja' },
+          { property: 'transform-origin', value: 'top left — róg przy polu', source: 'propozycja' },
+          { property: 'trigger', value: 'klik w pole albo ikonę · zamykają: wybór dnia, klik poza, Esc', source: 'decyzja FE' },
+          { property: 'prefers-reduced-motion', value: 'bez ruchu, fade 0.2 s / 0.15 s', source: 'a11y' },
+        ],
+        code: DATEPICKER_OPEN_CODE,
+        notes: (
+          <>
+            <p>
+              <strong>W Figmie date picker nie ma animacji</strong> — wartości to propozycja we wspólnym stylu,
+              ten sam przepis co menu (<code>popoverMotion</code>).
+            </p>
+            <p>
+              Kalendarz otwarty przez użytkownika ustawia fokus na wybranym dniu; po wyborze fokus wraca do
+              pola. Otwarty z kodu fokusu nie zabiera.
+            </p>
+          </>
+        ),
+        keywords: ['popover', 'otwarcie', 'zamknięcie', 'dialog'],
+        preview: <DatePickerDemo mode="popover" />,
+      },
+      {
+        id: 'date-picker-zmiana-miesiaca',
+        title: 'Zmiana miesiąca',
+        description:
+          'Strzałki w nagłówku (albo PageUp / PageDown) zmieniają miesiąc: nazwa i dni wjeżdżają o 2 px z kierunku zmiany, a poprzedni miesiąc odjeżdża i gaśnie.',
+        figmaNode: '94:13340',
+        figmaUrl: DS_DATEPICKER_FIGMA_URL,
+        params: [
+          { property: 'nowy miesiąc — opacity', value: '0 → 1 · 200 ms · ease-out', source: 'propozycja' },
+          { property: 'nowy miesiąc — x', value: '±2 px → 0 · 250 ms · cubic-bezier(0.22, 1, 0.36, 1)', source: 'propozycja' },
+          { property: 'stary miesiąc', value: 'opacity → 0, x → ∓2 px · 150 ms · cubic-bezier(0.4, 0, 1, 1)', source: 'propozycja' },
+          { property: 'kierunek', value: 'następny: w lewo · poprzedni: w prawo', source: 'propozycja' },
+          { property: 'wysokość', value: 'zawsze 6 tygodni (336 px) — nic nie skacze', source: 'Figma' },
+          { property: 'trigger', value: 'strzałki w nagłówku · PageUp / PageDown · strzałkami poza miesiąc', source: 'decyzja FE' },
+          { property: 'prefers-reduced-motion', value: 'bez przesunięcia, sam fade', source: 'a11y' },
+        ],
+        code: DATEPICKER_MONTH_CODE,
+        notes: (
+          <p>
+            Ten sam przepis co numery w paginacji (<code>swapMotion</code>). Stary i nowy miesiąc leżą w jednej
+            komórce siatki, a znikający nie łapie kliknięć.
+          </p>
+        ),
+        keywords: ['miesiąc', 'nawigacja', 'strzałki', 'pageup', 'pagedown'],
+        preview: <DatePickerDemo mode="month" />,
+      },
+      {
+        id: 'date-picker-wybor-dnia',
+        title: 'Wybór dnia',
+        description:
+          'Tło wybranego dnia przejeżdża do klikniętego dnia, a cyfry zamieniają kolory. Dzień pod kursorem dostaje jasne tło, a dzisiejszy ma kropkę.',
+        figmaNode: '94:13340',
+        figmaUrl: DS_DATEPICKER_FIGMA_URL,
+        params: [
+          { property: 'tło wybranego dnia', value: 'przesunięcie do nowego dnia · 250 ms · cubic-bezier(0.22, 1, 0.36, 1)', source: 'propozycja' },
+          { property: 'kolor cyfry', value: '#18181b ↔ #ffffff · 250 ms', source: 'propozycja (kolory: Figma)' },
+          { property: 'kolor tła', value: 'backgrounds/bg-interactive #3582ce', source: 'Figma' },
+          { property: 'hover', value: 'tło #f4f4f5 · 150 ms', source: 'Figma (kolor) · propozycja (czas)' },
+          { property: 'fokus', value: 'ramka #3b82f6 + obwódka 3 px', source: 'Figma (Focus)' },
+          { property: 'dzisiaj', value: 'kropka 3 px #3582ce (biała na wybranym dniu)', source: 'Figma' },
+          { property: 'prefers-reduced-motion', value: 'tło przeskakuje bez ruchu', source: 'a11y' },
+        ],
+        code: DATEPICKER_DAY_CODE,
+        notes: (
+          <p>
+            W <code>layoutId</code> jest numer miesiąca, więc przy zmianie miesiąca tło nie przelatuje ze starej
+            siatki do nowej. Klawiatura: strzałki chodzą po dniach, Home / End skaczą na początek i koniec
+            tygodnia.
+          </p>
+        ),
+        keywords: ['dzień', 'wybór', 'zaznaczenie', 'dzisiaj', 'today', 'layoutId'],
+        preview: <DatePickerDemo mode="day" />,
+      },
+      {
+        id: 'date-picker-miesiace-lata',
+        title: 'Miesiące i lata',
+        description:
+          'Klik w nazwę miesiąca albo rok w nagłówku przełącza kalendarz na siatkę miesięcy (3 × 4) albo lat (4 × 7): nowy widok dorasta z 98% i się pojawia, poprzedni gaśnie.',
+        figmaNode: '94:13340',
+        figmaUrl: DS_DATEPICKER_FIGMA_URL,
+        params: [
+          { property: 'nowy widok', value: 'opacity 0 → 1 (200 ms) · scale 0.98 → 1 (250 ms) · ease-out', source: 'propozycja' },
+          { property: 'stary widok', value: 'opacity → 0 · 150 ms · ease-in', source: 'propozycja' },
+          { property: 'nagłówek', value: 'nazwa gaśnie i się pojawia, bez przesunięcia', source: 'propozycja' },
+          { property: 'strony lat', value: 'po 28 lat · jak zmiana miesiąca (±2 px)', source: 'propozycja' },
+          { property: 'widoki', value: 'Month selected 3 × 4 · Year selected 4 × 7 · ta sama wysokość', source: 'Figma' },
+          { property: 'kolejność', value: 'wybór roku wraca do miesięcy, wybór miesiąca — do dni', source: 'decyzja FE' },
+          { property: 'prefers-reduced-motion', value: 'bez skali, sam fade', source: 'a11y' },
+        ],
+        code: DATEPICKER_VIEW_CODE,
+        notes: (
+          <p>
+            Nagłówek w Figmie nie ma stanu hover — przy najechaniu nazwa miesiąca i rok dostają tło przycisku
+            przezroczystego z design systemu (<code>button-transparent-hover</code>), żeby było widać, że są
+            klikalne.
+          </p>
+        ),
+        keywords: ['widok', 'miesiące', 'lata', 'rok', 'month selected', 'year selected'],
+        preview: <DatePickerDemo mode="view" />,
+      },
+    ],
+  },
 ];
 
 /* ── Menu i indeks wyszukiwarki (liczone z treści) ────────────────────────── */
@@ -580,11 +916,7 @@ const NAV: NavGroup[] = [
   },
   {
     label: 'Komponenty',
-    items: COMPONENTS.map((component) => ({
-      id: component.id,
-      title: component.name,
-      children: component.entries.map((entry) => ({ id: entry.id, title: entry.title })),
-    })),
+    items: COMPONENTS.map((component) => ({ id: component.id, title: component.name })),
   },
 ];
 
@@ -658,8 +990,9 @@ export default function AnimacjePage() {
             </h2>
             <p className={styles.componentSummary}>{MOTION_STYLE_SUMMARY}</p>
             <p className={styles.meta}>
-              Kod: <code>components/motion.ts</code> · zmienne CSS <code>--motion-*</code> w{' '}
-              <code>app/globals.css</code> · Toast ma własne wartości z Figmy.
+              Kod: <code>components/motion.ts</code> (gotowe przepisy: <code>popoverMotion</code>,{' '}
+              <code>swapMotion</code>, <code>viewMotion</code>, <code>moveTransition</code>) · zmienne CSS{' '}
+              <code>--motion-*</code> w <code>app/globals.css</code> · Toast ma własne wartości z Figmy.
             </p>
           </header>
 

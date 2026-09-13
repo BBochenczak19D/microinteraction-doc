@@ -19,7 +19,6 @@ export type NavItem = {
   /** Id sekcji na stronie — link prowadzi do „#id”. */
   id: string;
   title: string;
-  children?: NavItem[];
 };
 
 export type NavGroup = {
@@ -112,10 +111,7 @@ export default function Sidebar({ groups, searchDocs }: SidebarProps) {
 
   const index = useMemo(() => createSearchIndex(searchDocs), [searchDocs]);
   const hits = useMemo(() => search(index, query), [index, query]);
-  const sectionIds = useMemo(
-    () => groups.flatMap((group) => group.items.flatMap((item) => [item.id, ...(item.children ?? []).map((child) => child.id)])),
-    [groups],
-  );
+  const sectionIds = useMemo(() => groups.flatMap((group) => group.items.map((item) => item.id)), [groups]);
   const activeSection = useActiveSection(sectionIds);
   const isSearching = query.trim() !== '';
 
@@ -344,29 +340,11 @@ export default function Sidebar({ groups, searchDocs }: SidebarProps) {
                           href={`#${item.id}`}
                           className={styles.link}
                           data-active={item.id === activeSection}
-                          data-parent-active={item.children?.some((child) => child.id === activeSection) ?? false}
                           aria-current={item.id === activeSection ? 'location' : undefined}
                           onClick={closeOnNavigate}
                         >
                           {item.title}
                         </a>
-                        {item.children?.length ? (
-                          <ul className={styles.sublist}>
-                            {item.children.map((child) => (
-                              <li key={child.id}>
-                                <a
-                                  href={`#${child.id}`}
-                                  className={`${styles.link} ${styles.sublink}`}
-                                  data-active={child.id === activeSection}
-                                  aria-current={child.id === activeSection ? 'location' : undefined}
-                                  onClick={closeOnNavigate}
-                                >
-                                  {child.title}
-                                </a>
-                              </li>
-                            ))}
-                          </ul>
-                        ) : null}
                       </li>
                     ))}
                   </ul>

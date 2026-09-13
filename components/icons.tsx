@@ -32,3 +32,42 @@ export function CheckMiniIcon(props: SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+/** x-mark, 20 × 20 — czyszczenie pola daty (dwie kreski 1.5 px, węższe niż heroicons). */
+export function XMarkFieldIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path d="M13.25 5.75L5.75 13.25" />
+      <path d="M5.75 5.75L13.25 13.25" />
+    </svg>
+  );
+}
+
+/** triangle-left-mini, 15 × 15 — poprzedni miesiąc w kalendarzu. */
+export function TriangleLeftMiniIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="currentColor" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <path d="M10 10.0901C9.99994 10.2532 9.96269 10.4132 9.89216 10.5535C9.82162 10.6939 9.72039 10.8093 9.59904 10.8877C9.47769 10.9662 9.34067 11.0048 9.20232 10.9995C9.06397 10.9943 8.92936 10.9453 8.81255 10.8578L5.35788 8.2683C5.24821 8.18608 5.15791 8.0726 5.09535 7.93835C5.0328 7.80411 5 7.65344 5 7.5003C5 7.34716 5.0328 7.1965 5.09535 7.06225C5.15791 6.92801 5.24821 6.81453 5.35788 6.73231L8.81255 4.14219C8.92939 4.05465 9.06405 4.00571 9.20245 4.00047C9.34085 3.99523 9.4779 4.0339 9.59926 4.11243C9.72063 4.19095 9.82185 4.30645 9.89235 4.44685C9.96285 4.58724 10 4.74737 10 4.91049L10 10.0901Z" />
+    </svg>
+  );
+}
+
+/** triangle-right-mini, 15 × 15 — następny miesiąc w kalendarzu. */
+export function TriangleRightMiniIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="currentColor" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <path d="M5 4.90988C5.00006 4.74682 5.03731 4.58676 5.10784 4.44646C5.17838 4.30615 5.27961 4.19073 5.40096 4.11228C5.52231 4.03383 5.65933 3.99521 5.79768 4.00047C5.93603 4.00574 6.07064 4.05468 6.18745 4.14219L9.64212 6.7317C9.75179 6.81392 9.84209 6.9274 9.90465 7.06165C9.9672 7.19589 10 7.34656 10 7.4997C10 7.65284 9.9672 7.8035 9.90465 7.93775C9.84209 8.07199 9.75179 8.18547 9.64212 8.26769L6.18745 10.8578C6.07061 10.9453 5.93595 10.9943 5.79755 10.9995C5.65915 11.0048 5.5221 10.9661 5.40074 10.8876C5.27937 10.809 5.17815 10.6935 5.10765 10.5532C5.03715 10.4128 4.99997 10.2526 5 10.0895V4.90988Z" />
+    </svg>
+  );
+}

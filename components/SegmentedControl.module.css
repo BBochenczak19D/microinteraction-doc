@@ -1,0 +1,144 @@
+/* Segmented control — style z tokenów design systemu (strona „Segment control”, node 349:757).
+ * Fallbacki = wartości z Figmy. Czasy przejść: wspólne zmienne --motion-* (app/globals.css). */
+
+/* Kontener 40 px: padding 4 + segment 32 + padding 4; ramka rysowana cieniem w środku,
+ * żeby nie zjadała paddingu (w Figmie obrys jest wewnętrzny). Kolumny równe, szerokość
+ * dopasowana do najdłuższej etykiety, minimum 320 px jak w Figmie. */
+.control {
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: 1px;
+  width: max-content;
+  min-width: min(320px, 100%);
+  max-width: 100%;
+  padding: 4px;
+  font-family: var(--family-body, 'Montserrat', system-ui, sans-serif);
+  background: var(--backgrounds-bg-disabled, #f4f4f5);
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px var(--borders-border-base, #e5e5e5);
+}
+
+/* Segmented control item — 32 px, ikona 16 + odstęp 6 + etykieta 13/20 SemiBold */
+.item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 6px 8px;
+  font: inherit;
+  font-size: var(--font-size-small, 13px);
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--foregrounds-fg-muted, #71717a);
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  outline: none;
+  cursor: pointer;
+  transition: color var(--motion-duration-enter, 250ms) var(--motion-ease-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+/* Figma: Hover — tylko kolor etykiety */
+.item:hover:not(:disabled) {
+  color: var(--foregrounds-fg-base, #18181b);
+  transition-duration: var(--motion-duration-state, 150ms);
+}
+
+.item[aria-checked='true'] {
+  color: var(--foregrounds-fg-base, #18181b);
+}
+
+/* Figma: Disabled */
+.item:disabled {
+  color: var(--foregrounds-fg-disabled, #a1a1aa);
+  cursor: default;
+}
+
+.item:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 1px;
+}
+
+.icon,
+.label {
+  position: relative;
+}
+
+.icon {
+  display: block;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Tło aktywnego segmentu — jeden element, który przejeżdża do wybranego (Uniwersal) */
+.indicator {
+  position: absolute;
+  inset: 0;
+  background: var(--backgrounds-bg-field-component, #ffffff);
+  border-radius: 6px;
+  /* Light/Elevation/card-rest */
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.08),
+    0 1px 2px -1px rgba(0, 0, 0, 0.08),
+    0 2px 4px 0 rgba(0, 0, 0, 0.04);
+  transition: background-color var(--motion-duration-state, 150ms) var(--motion-ease-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+/* Figma: Active Hover / Active Pressed */
+.item:hover .indicator {
+  background: var(--backgrounds-bg-field-component-hover, #fafafa);
+}
+
+.item:active .indicator {
+  background: var(--backgrounds-bg-base-pressed, #e4e4e7);
+  transition-duration: 0s;
+}
+
+/* Marka Estigroup */
+.control[data-brand='estigroup'] .item[aria-checked='true'] {
+  color: var(--foregrounds-fg-on-color, #ffffff);
+}
+
+.control[data-brand='estigroup'] .indicator {
+  background: var(--backgrounds-bg-interactive, #3582ce);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
+.control[data-brand='estigroup'] .item:hover .indicator {
+  background: var(--backgrounds-bg-interactive-hover, #0069a8);
+}
+
+.control[data-brand='estigroup'] .item:active .indicator {
+  background: var(--backgrounds-bg-interactive-pressed, #00598a);
+}
+
+/* Marka Estimoto — ramka 1 px w środku, żeby segment został 32 px */
+.control[data-brand='estimoto'] .item[aria-checked='true'] {
+  color: var(--estigroup-primary, #3582ce);
+}
+
+.control[data-brand='estimoto'] .indicator {
+  box-shadow:
+    inset 0 0 0 1px var(--estimoto-primary, #f8af38),
+    0 0 0 1px rgba(0, 0, 0, 0.08),
+    0 1px 2px -1px rgba(248, 175, 56, 0.53),
+    0 2px 4px 0 rgba(248, 175, 56, 0.42);
+}
+
+.control[data-brand='estimoto'] .item:hover .indicator {
+  background: var(--yellow-50, #fefce8);
+}
+
+.control[data-brand='estimoto'] .item:active .indicator {
+  background: var(--yellow-100, #fef9c2);
+}
