@@ -18,18 +18,19 @@
   height: 36px;
   padding: 0;
   color: var(--icon-secondary, #1d293d);
-  background: transparent; /* do potwierdzenia — Figma pokazuje tylko stan otwarty */
+  background: var(--buttons-button-transparent, rgba(255, 255, 255, 0));
   border: 0;
   border-radius: var(--radius-6, 6px);
   outline: none;
   cursor: pointer;
   transition:
-    background-color 120ms ease-out,
-    box-shadow 120ms ease-out;
+    background-color var(--motion-duration-state, 150ms) var(--motion-ease-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    box-shadow var(--motion-duration-state, 150ms) var(--motion-ease-out, cubic-bezier(0.22, 1, 0.36, 1));
 }
 
+/* Token DS z „Pagination Item” — buttons/button-transparent-hover */
 .trigger:hover {
-  background: rgba(24, 24, 27, 0.06); /* do potwierdzenia */
+  background: var(--buttons-button-transparent-hover, rgba(24, 24, 27, 0.06));
 }
 
 /* Przy otwartym menu — z Figmy */

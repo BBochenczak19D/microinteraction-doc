@@ -85,6 +85,53 @@
   color: var(--foregrounds-fg-muted, #52525b);
 }
 
+/* Tabela wspólnego stylu animacji */
+.tokens {
+  width: 100%;
+  margin-top: 8px;
+  border-collapse: collapse;
+  font-size: 13px;
+  line-height: 20px;
+  text-align: left;
+}
+
+.tokens th,
+.tokens td {
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  vertical-align: top;
+  font-weight: 400;
+  color: var(--foregrounds-fg-base, #18181b);
+}
+
+.tokens thead th {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--foregrounds-fg-muted, #71717a);
+}
+
+.tokens tbody th {
+  width: 26%;
+  font-weight: 600;
+}
+
+.tokens code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+  .tokens th,
+  .tokens td {
+    padding: 8px 6px;
+  }
+
+  .tokens tbody th {
+    width: auto;
+  }
+}
+
 @media (max-width: 959px) {
   .layout {
     display: block;

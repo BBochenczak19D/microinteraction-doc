@@ -24,8 +24,8 @@ import styles from './MenuButton.module.css';
  * Dostępność: wzorzec „menu button” — otwarte klawiaturą ustawia fokus na
  * pierwszej pozycji, strzałki chodzą po pozycjach, Esc i wybór wracają na przycisk.
  *
- * Figma pokazuje przycisk tylko przy otwartym menu (tło 10%) — stan domyślny
- * i hover w CSS są do potwierdzenia. */
+ * Tło przycisku: domyślne i hover z tokenów DS (buttons/button-transparent
+ * i -hover, jak w paginacji); przy otwartym menu 10% — z Figmy. */
 
 type IconComponent = ComponentType<SVGProps<SVGSVGElement>>;
 

@@ -43,8 +43,8 @@
   outline: none;
   cursor: pointer;
   transition:
-    background-color 120ms ease-out,
-    box-shadow 120ms ease-out;
+    background-color var(--motion-duration-state, 150ms) var(--motion-ease-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    box-shadow var(--motion-duration-state, 150ms) var(--motion-ease-out, cubic-bezier(0.22, 1, 0.36, 1));
 }
 
 .field:hover {

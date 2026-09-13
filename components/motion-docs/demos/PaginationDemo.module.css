@@ -1,0 +1,43 @@
+.demo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+/* Default ma 320 px — na telefonie przewija się w poziomie zamiast rozpychać scenę */
+.scroller {
+  display: flex;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.variants {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 32px 48px;
+}
+
+.variant {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.caption,
+.hint {
+  margin: 0;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--foregrounds-fg-muted, #71717a);
+  text-align: center;
+}
+
+.hint {
+  min-height: 16px;
+}

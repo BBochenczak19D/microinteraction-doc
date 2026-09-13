@@ -1,0 +1,123 @@
+/* Pagination — style z tokenów design systemu (strona „Pagination”, node 903:635).
+ * Fallbacki = wartości z Figmy (Pagination Item 32 × 32, odstęp 4 px).
+ * Czasy przejść: wspólne zmienne --motion-* (app/globals.css). */
+
+.pagination {
+  font-family: var(--family-body, 'Montserrat', system-ui, sans-serif);
+}
+
+.list {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.list > li {
+  display: flex;
+}
+
+/* Pagination Item — Number / Ellipsis 13 px, Prev / Next 18 px, SemiBold */
+.item,
+.arrow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  line-height: normal;
+  color: var(--buttons-text-secondary, #18181b);
+  background: var(--buttons-button-transparent, rgba(255, 255, 255, 0));
+  border: 0;
+  border-radius: 6px;
+  outline: none;
+  cursor: pointer;
+  transition:
+    background-color var(--motion-duration-state, 150ms) var(--motion-ease-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    color var(--motion-duration-state, 150ms) var(--motion-ease-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    box-shadow var(--motion-duration-state, 150ms) var(--motion-ease-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.item {
+  font-size: 13px;
+}
+
+.arrow {
+  font-size: 18px;
+}
+
+/* Figma: Hover */
+.item:hover:not(:disabled):not([aria-current='page']),
+.arrow:hover:not(:disabled) {
+  background: var(--buttons-button-transparent-hover, rgba(24, 24, 27, 0.06));
+}
+
+/* Figma: Prev / Next Active — wciśnięta strzałka, od razu; po puszczeniu wygasa */
+.arrow:active:not(:disabled) {
+  color: var(--buttons-text-primary, #ffffff);
+  background: var(--estigroup-primary, #3582ce);
+  transition-duration: 0s;
+}
+
+/* Figma: Focus — obramowanie 2 px */
+.item:focus-visible,
+.arrow:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--estigroup-primary, #3582ce);
+}
+
+/* Figma: Disabled — strzałka na pierwszej / ostatniej stronie */
+.arrow:disabled {
+  color: var(--foregrounds-fg-subtle, #52525b);
+  cursor: default;
+}
+
+/* Wielokropek nie jest klikalny, ale wygląda jak zwykła pozycja */
+.item:disabled {
+  cursor: default;
+}
+
+/* Tło aktywnej strony — jeden element, który przejeżdża do nowej strony */
+.indicator {
+  position: absolute;
+  inset: 0;
+  background: var(--estigroup-primary, #3582ce);
+  border-radius: 6px;
+}
+
+/* Numer: stary i nowy w tej samej komórce siatki, żeby nakładały się przy zmianie */
+.label {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.labelText {
+  grid-area: 1 / 1;
+  transition: color var(--motion-duration-enter, 250ms) var(--motion-ease-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.item[aria-current='page'] .labelText {
+  color: var(--buttons-text-primary, #ffffff);
+}
+
+/* Mini — same strzałki szerokości znaku, jak w Figmie; wciśnięta: niebieski znak zamiast tła */
+.miniArrow {
+  width: auto;
+}
+
+.miniArrow:hover:not(:disabled) {
+  background: transparent;
+}
+
+.miniArrow:active:not(:disabled) {
+  color: var(--estigroup-primary, #3582ce);
+  background: transparent;
+}

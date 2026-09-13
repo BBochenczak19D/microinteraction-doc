@@ -35,16 +35,35 @@ Strona: http://localhost:3000
 
 ## Struktura
 
-- `app/page.tsx` — cała treść w tablicy `COMPONENTS` (komponent → animacje). Z niej powstają
-  sekcje strony, menu w sidebarze i indeks wyszukiwarki.
+- `app/page.tsx` — cała treść w tablicy `COMPONENTS` (komponent → animacje) i tabela stylu animacji.
+  Z niej powstają sekcje strony, menu w sidebarze i indeks wyszukiwarki.
 - `components/motion-docs/MotionEntry.tsx` — sekcja jednej animacji: podgląd, tabela, snippet, uwagi.
 - `components/motion-docs/Sidebar.tsx` — menu, lista komponentów, wyszukiwarka; poniżej 960 px szuflada.
 - `components/motion-docs/search.ts` — logika wyszukiwania.
-- `components/motion-docs/demos/` — podglądy do sceny (toast, który naprawdę się zamyka; Select i menu akcji).
+- `components/motion-docs/demos/` — podglądy do sceny (toast, Select, menu akcji, paginacja).
+- `components/motion.ts` — wspólny styl animacji (czasy, krzywe, dystans, skala); te same wartości
+  jako zmienne CSS `--motion-*` w `app/globals.css`.
 - `components/Toast.tsx` — komponent produkcyjny, specyfikacja animacji w komentarzu na górze.
 - `components/Menu.tsx` — panel menu rozwijanego i specyfikacja jego animacji (warianty Select i Button).
 - `components/Select.tsx`, `components/MenuButton.tsx` — komponenty, które otwierają to menu.
+- `components/Pagination.tsx` — paginacja (Default, Compact, Mini) ze specyfikacją animacji.
 - `components/icons.tsx` — ikony Medusa UI wyeksportowane z Figmy (nie ma ich w heroicons).
+
+## Styl animacji
+
+Gdy w Figmie nie ma animacji, wartości są propozycją we wspólnym stylu — subtelnie, bez sprężyn,
+zniknięcie krótsze od pojawienia się:
+
+| Token | Wartość |
+| --- | --- |
+| pojawienie się, ruch | 250 ms · `cubic-bezier(0.22, 1, 0.36, 1)` |
+| fade przy pojawieniu | 200 ms · ta sama krzywa |
+| zniknięcie | 150 ms · `cubic-bezier(0.4, 0, 1, 1)` |
+| zmiana stanu (hover, fokus) | 150 ms · ease-out |
+| dystans / skala | 2 px / 0.98 → 1 |
+
+Nowa animacja bez danych z Figmy bierze wartości z `components/motion.ts`, nie wymyśla własnych.
+Toast ma wartości z eksportu Figmy i zostaje przy nich.
 
 ## Dodanie kolejnej animacji
 
@@ -76,8 +95,9 @@ Ignoruje wielkość liter i polskie znaki („znikniecie” = „Zniknięcie”,
 
 ## Status
 
-| Komponent | Wejście | Wyjście | Uwagi |
+| Komponent | Animacje | Źródło | Uwagi |
 | --- | --- | --- | --- |
-| Toast | gotowe (Figma 2116:26967) | gotowe — wejście w odwrotnym kierunku, po kliknięciu „×” | kolor ikony statusu do potwierdzenia |
-| Menu — Select | propozycja (w Figmie brak animacji) | propozycja | wygląd: Design System, strona Select (81:993) |
-| Menu — Button | propozycja (w Figmie brak animacji) | propozycja | przycisk „⋯”: stan domyślny i hover do potwierdzenia |
+| Toast | pojawienie się, zniknięcie po „×” | Figma (2116:26967) | kolor ikony statusu do potwierdzenia |
+| Menu — Select | pojawienie się, zamknięcie | propozycja, wspólny styl | wygląd: Design System, strona Select (81:993) |
+| Menu — Button | pojawienie się, zamknięcie | propozycja, wspólny styl | tło przycisku z tokenów DS; 10% przy otwartym menu z Figmy |
+| Paginacja | zmiana strony, przesunięcie zakresu, stany | propozycja + stany z Figmy (903:635) | zakres Default: strona ±1 |

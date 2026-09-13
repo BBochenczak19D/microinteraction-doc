@@ -1,8 +1,16 @@
 'use client';
 
-import { motion, useReducedMotion, type HTMLMotionProps, type Transition, type Variants } from 'framer-motion';
+import { motion, useReducedMotion, type HTMLMotionProps, type Variants } from 'framer-motion';
 import type { Ref } from 'react';
 
+import {
+  DISTANCE,
+  SCALE,
+  enterTransition,
+  exitTransition,
+  reducedEnterTransition,
+  reducedExitTransition,
+} from './motion';
 import styles from './Menu.module.css';
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -11,60 +19,36 @@ import styles from './Menu.module.css';
  * Wygląd: Design System, strona „Select” (node 81:993). Użycie: Platform for
  * dealers, 2130:17715 — Select „Rocznik” i menu akcji pod przyciskiem „⋯”.
  *
- * W Figmie menu nie ma animacji — wartości poniżej to propozycja do
- * potwierdzenia. Oba warianty mają te same czasy i krzywe; różni je kierunek,
- * w którym menu rośnie.
+ * W Figmie menu nie ma animacji — wartości to propozycja we wspólnym stylu
+ * (components/motion.ts). Oba warianty animują się tak samo; różni je tylko
+ * punkt, z którego menu rośnie.
  *
  * Pojawienie się (otwarcie):
- *   opacity : 0 → 1         | 150 ms, ease-out
- *   y       : −4 px → 0     | 200 ms, cubic-bezier(0.16, 1, 0.3, 1)
- *   Select  : scaleY 0.96 → 1, transform-origin: top
- *             — tylko w pionie: menu ma szerokość pola, więc jego krawędzie
- *               muszą się z nim zgadzać przez całą animację
- *   Button  : scale 0.95 → 1, transform-origin: top right
- *             — menu jest wyrównane do prawej krawędzi przycisku i z niej wyrasta
+ *   opacity : 0 → 1         | 200 ms, cubic-bezier(0.22, 1, 0.36, 1)
+ *   y       : −2 px → 0     | 250 ms, ta sama krzywa
+ *   scale   : 0.98 → 1      | 250 ms, ta sama krzywa
+ *   transform-origin: top (Select) / top right (Button — róg przycisku)
  *
  * Zamknięcie (wybór, klik poza menu, Esc, Tab):
  *   wszystkie właściwości wracają do wartości startowych
- *   100 ms, cubic-bezier(0.4, 0, 1, 1) — 2× szybciej niż otwarcie, żeby po
- *   wyborze interfejs od razu wrócił do użytkownika
+ *   150 ms, cubic-bezier(0.4, 0, 1, 1) — krócej niż otwarcie
  *
- * prefers-reduced-motion: bez ruchu, sam fade 100 ms w obie strony.
+ * prefers-reduced-motion: bez ruchu, sam fade (200 ms / 150 ms).
  * ──────────────────────────────────────────────────────────────────────────── */
 
-/** Szybki start i długie wyhamowanie — menu „dojeżdża” na miejsce. */
-const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
-
-/** Przyspiesza do końca — przy zamknięciu menu „odjeżdża”. */
-const EASE_IN = [0.4, 0, 1, 1] as const;
-
-const openTransition: Transition = {
-  opacity: { duration: 0.15, ease: 'easeOut' },
-  default: { duration: 0.2, ease: EASE_OUT_EXPO },
-};
-
-const closeTransition: Transition = { duration: 0.1, ease: EASE_IN };
-
-/** Menu pod polem Select. */
-export const selectMenuMotion: Variants = {
-  closed: { opacity: 0, y: -4, scaleY: 0.96, transition: closeTransition },
-  open: { opacity: 1, y: 0, scaleY: 1, transition: openTransition },
-};
-
-/** Menu pod przyciskiem. */
-export const buttonMenuMotion: Variants = {
-  closed: { opacity: 0, y: -4, scale: 0.95, transition: closeTransition },
-  open: { opacity: 1, y: 0, scale: 1, transition: openTransition },
+export const menuMotion: Variants = {
+  closed: { opacity: 0, y: -DISTANCE, scale: SCALE, transition: exitTransition },
+  open: { opacity: 1, y: 0, scale: 1, transition: enterTransition },
 };
 
 /** Wariant bez ruchu — dla użytkowników z prefers-reduced-motion: reduce. */
 export const menuMotionReduced: Variants = {
-  closed: { opacity: 0, transition: { duration: 0.1 } },
-  open: { opacity: 1, transition: { duration: 0.1 } },
+  closed: { opacity: 0, transition: reducedExitTransition },
+  open: { opacity: 1, transition: reducedEnterTransition },
 };
 
 export type MenuPanelProps = HTMLMotionProps<'div'> & {
-  /** Pod czym otwiera się menu — decyduje o pozycji i kierunku wzrostu. */
+  /** Pod czym otwiera się menu — decyduje o pozycji i punkcie, z którego rośnie. */
   placement: 'select' | 'button';
   ref?: Ref<HTMLDivElement>;
 };
@@ -75,16 +59,11 @@ export type MenuPanelProps = HTMLMotionProps<'div'> & {
  */
 export function MenuPanel({ placement, className, ...props }: MenuPanelProps) {
   const prefersReducedMotion = useReducedMotion();
-  const variants = prefersReducedMotion
-    ? menuMotionReduced
-    : placement === 'select'
-      ? selectMenuMotion
-      : buttonMenuMotion;
 
   return (
     <motion.div
       className={[styles.panel, styles[placement], className].filter(Boolean).join(' ')}
-      variants={variants}
+      variants={prefersReducedMotion ? menuMotionReduced : menuMotion}
       initial="closed"
       animate="open"
       exit="closed"

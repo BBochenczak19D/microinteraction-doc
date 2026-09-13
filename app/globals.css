@@ -15,6 +15,13 @@
   --spacing-12: 12px;
   --radius-8: 8px;
   --font-size-small: 13px;
+
+  /* Wspólny styl animacji — te same wartości co components/motion.ts */
+  --motion-duration-enter: 250ms;
+  --motion-duration-exit: 150ms;
+  --motion-duration-state: 150ms;
+  --motion-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-ease-in: cubic-bezier(0.4, 0, 1, 1);
 }
 
 * {
