@@ -1,0 +1,114 @@
+/* MenuButton — IconButton + menu akcji.
+ * Fallbacki = wartości z Figmy (Platform for dealers 2130:17714; Design System,
+ * strona „Select”: SIMPLE Menu Items Small, separator menu). */
+
+.root {
+  position: relative;
+  display: inline-flex;
+  height: fit-content; /* menu liczy `top` od wysokości przycisku — rodzic flex/grid nie może go rozciągnąć */
+  font-family: var(--family-body, 'Montserrat', system-ui, sans-serif);
+}
+
+/* IconButton 36 × 36 (10.5 px + ikona 15 px + 10.5 px) */
+.trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  color: var(--icon-secondary, #1d293d);
+  background: transparent; /* do potwierdzenia — Figma pokazuje tylko stan otwarty */
+  border: 0;
+  border-radius: var(--radius-6, 6px);
+  outline: none;
+  cursor: pointer;
+  transition:
+    background-color 120ms ease-out,
+    box-shadow 120ms ease-out;
+}
+
+.trigger:hover {
+  background: rgba(24, 24, 27, 0.06); /* do potwierdzenia */
+}
+
+/* Przy otwartym menu — z Figmy */
+.trigger[aria-expanded='true'] {
+  background: rgba(24, 24, 27, 0.1);
+}
+
+.trigger:focus-visible {
+  box-shadow:
+    0 0 0 1px #2563eb,
+    0 0 0 4px rgba(37, 99, 235, 0.2);
+}
+
+.triggerIcon {
+  display: block;
+  width: 15px;
+  height: 15px;
+}
+
+.menu:focus {
+  outline: none;
+}
+
+/* SIMPLE Menu Items — Small, 28 px */
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-8, 8px);
+  width: 100%;
+  padding: var(--spacing-4, 4px) var(--spacing-8, 8px);
+  font: inherit;
+  font-size: var(--font-size-small, 13px);
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--foregrounds-fg-base, #18181b);
+  text-align: left;
+  white-space: nowrap;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-4, 4px);
+  outline: none;
+  cursor: pointer;
+}
+
+/* Fokus = podświetlenie. Najechanie myszą też przenosi fokus, więc stan jest jeden. */
+.item:focus {
+  background: var(--backgrounds-bg-component-hover, #f4f4f5);
+}
+
+.itemIcon {
+  display: block;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: var(--icon-secondary, #1d293d);
+}
+
+/* Separator — 8 px, dwie linie na całą szerokość menu (border-menu-top / -bot) */
+.separator {
+  position: relative;
+  height: 8px;
+  margin: 0 -4px;
+}
+
+.separator::before,
+.separator::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+}
+
+.separator::before {
+  top: 3px;
+  background: var(--borders-border-menu-top, #e4e4e7);
+}
+
+.separator::after {
+  top: 4px;
+  background: var(--borders-border-menu-bot, #ffffff);
+}

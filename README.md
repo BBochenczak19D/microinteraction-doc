@@ -40,8 +40,11 @@ Strona: http://localhost:3000
 - `components/motion-docs/MotionEntry.tsx` — sekcja jednej animacji: podgląd, tabela, snippet, uwagi.
 - `components/motion-docs/Sidebar.tsx` — menu, lista komponentów, wyszukiwarka; poniżej 960 px szuflada.
 - `components/motion-docs/search.ts` — logika wyszukiwania.
-- `components/motion-docs/demos/` — podglądy do sceny (np. toast, który naprawdę się zamyka).
+- `components/motion-docs/demos/` — podglądy do sceny (toast, który naprawdę się zamyka; Select i menu akcji).
 - `components/Toast.tsx` — komponent produkcyjny, specyfikacja animacji w komentarzu na górze.
+- `components/Menu.tsx` — panel menu rozwijanego i specyfikacja jego animacji (warianty Select i Button).
+- `components/Select.tsx`, `components/MenuButton.tsx` — komponenty, które otwierają to menu.
+- `components/icons.tsx` — ikony Medusa UI wyeksportowane z Figmy (nie ma ich w heroicons).
 
 ## Dodanie kolejnej animacji
 
@@ -76,3 +79,5 @@ Ignoruje wielkość liter i polskie znaki („znikniecie” = „Zniknięcie”,
 | Komponent | Wejście | Wyjście | Uwagi |
 | --- | --- | --- | --- |
 | Toast | gotowe (Figma 2116:26967) | gotowe — wejście w odwrotnym kierunku, po kliknięciu „×” | kolor ikony statusu do potwierdzenia |
+| Menu — Select | propozycja (w Figmie brak animacji) | propozycja | wygląd: Design System, strona Select (81:993) |
+| Menu — Button | propozycja (w Figmie brak animacji) | propozycja | przycisk „⋯”: stan domyślny i hover do potwierdzenia |

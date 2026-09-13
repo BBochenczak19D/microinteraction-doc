@@ -1,9 +1,11 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { Fragment, type ReactNode } from 'react';
 
 import MotionEntry, { type MotionParam } from '@/components/motion-docs/MotionEntry';
 import Sidebar, { type NavGroup } from '@/components/motion-docs/Sidebar';
+import MenuButtonDemo from '@/components/motion-docs/demos/MenuButtonDemo';
+import SelectDemo from '@/components/motion-docs/demos/SelectDemo';
 import ToastDemo from '@/components/motion-docs/demos/ToastDemo';
 import { nodeToText, type SearchDoc } from '@/components/motion-docs/search';
 import styles from './page.module.css';
@@ -32,14 +34,16 @@ type DocComponent = {
   id: string;
   name: string;
   summary: string;
-  /** Plik komponentu w repo. */
-  file: string;
+  /** Pliki komponentu w repo. */
+  files: string[];
   keywords?: string[];
   entries: DocEntry[];
 };
 
 const INTRO_LEAD =
   'Dokumentacja animacji komponentów: podgląd na żywo, parametry wyciągnięte z Figmy i gotowy snippet. Wartości w tabelach są wiążące — jeśli coś trzeba zmienić, zmieniamy najpierw w Figmie, potem tutaj.';
+
+/* ── Toast ── */
 
 const TOAST_FIGMA_URL =
   'https://www.figma.com/design/UCzHnyMnTZ2AS0PnYsw6eR/Platform-for-dealers?node-id=2116-26967';
@@ -81,12 +85,95 @@ const TOAST_TRANSITION = {
   )}
 </AnimatePresence>`;
 
+/* ── Menu ── */
+
+const DS_SELECT_FIGMA_URL =
+  'https://www.figma.com/design/LorGLqilmfYrIQp72jTOHB/Design-System?node-id=81-993';
+
+const MENU_SELECT_OPEN_CODE = `const MENU_OPEN = {
+  opacity: { duration: 0.15, ease: 'easeOut' },
+  default: { duration: 0.2, ease: [0.16, 1, 0.3, 1] },
+};
+
+// .menu { position: absolute; top: calc(100% + 8px); left: 0; right: 0; transform-origin: top; }
+<AnimatePresence initial={false}>
+  {isOpen && (
+    <motion.div
+      key="select-menu"
+      className="menu"
+      initial={{ opacity: 0, y: -4, scaleY: 0.96 }}
+      animate={{ opacity: 1, y: 0, scaleY: 1, transition: MENU_OPEN }}
+    >
+      <ul role="listbox">…</ul>
+    </motion.div>
+  )}
+</AnimatePresence>`;
+
+const MENU_SELECT_CLOSE_CODE = `// MENU_OPEN — jak przy pojawieniu się
+const MENU_CLOSE = { duration: 0.1, ease: [0.4, 0, 1, 1] };
+
+<AnimatePresence initial={false}>
+  {isOpen && (
+    <motion.div
+      key="select-menu"
+      className="menu" // transform-origin: top
+      initial={{ opacity: 0, y: -4, scaleY: 0.96 }}
+      animate={{ opacity: 1, y: 0, scaleY: 1, transition: MENU_OPEN }}
+      exit={{ opacity: 0, y: -4, scaleY: 0.96, transition: MENU_CLOSE }}
+    >
+      …
+    </motion.div>
+  )}
+</AnimatePresence>
+
+// wybór opcji: onChange(value) i setIsOpen(false) w jednym handlerze`;
+
+const MENU_BUTTON_OPEN_CODE = `const MENU_OPEN = {
+  opacity: { duration: 0.15, ease: 'easeOut' },
+  default: { duration: 0.2, ease: [0.16, 1, 0.3, 1] },
+};
+
+// .menu { position: absolute; top: calc(100% + 6px); right: 0; transform-origin: top right; }
+<AnimatePresence initial={false}>
+  {isOpen && (
+    <motion.div
+      key="button-menu"
+      role="menu"
+      className="menu"
+      initial={{ opacity: 0, y: -4, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1, transition: MENU_OPEN }}
+    >
+      …
+    </motion.div>
+  )}
+</AnimatePresence>`;
+
+const MENU_BUTTON_CLOSE_CODE = `// MENU_OPEN — jak przy pojawieniu się
+const MENU_CLOSE = { duration: 0.1, ease: [0.4, 0, 1, 1] };
+
+<AnimatePresence initial={false}>
+  {isOpen && (
+    <motion.div
+      key="button-menu"
+      role="menu"
+      className="menu" // transform-origin: top right
+      initial={{ opacity: 0, y: -4, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1, transition: MENU_OPEN }}
+      exit={{ opacity: 0, y: -4, scale: 0.95, transition: MENU_CLOSE }}
+    >
+      …
+    </motion.div>
+  )}
+</AnimatePresence>
+
+// wybór akcji albo Esc: setIsOpen(false) i fokus z powrotem na przycisk`;
+
 const COMPONENTS: DocComponent[] = [
   {
     id: 'toast',
     name: 'Toast',
     summary: 'Krótkie potwierdzenie akcji, np. „Oznaczono Ducati HD883 jako sprzedany”.',
-    file: 'components/Toast.tsx',
+    files: ['components/Toast.tsx'],
     keywords: ['powiadomienie', 'komunikat', 'notification', 'snackbar'],
     entries: [
       {
@@ -155,6 +242,137 @@ const COMPONENTS: DocComponent[] = [
       },
     ],
   },
+  {
+    id: 'menu',
+    name: 'Menu',
+    summary:
+      'Rozwijana lista opcji (Select Menu z design systemu) w dwóch wariantach: pod polem Select i pod przyciskiem „⋯”.',
+    files: ['components/Menu.tsx', 'components/Select.tsx', 'components/MenuButton.tsx'],
+    keywords: ['dropdown', 'lista rozwijana', 'select menu', 'popover', 'flyout'],
+    entries: [
+      {
+        id: 'menu-select-pojawienie-sie',
+        title: 'Select — pojawienie się',
+        description:
+          'Menu wysuwa się spod pola: opada o 4 px i rozciąga w pionie od krawędzi przy polu. Otwiera się kliknięciem w pole albo klawiszem (Enter, Spacja, strzałki).',
+        figmaNode: '81:993',
+        figmaUrl: DS_SELECT_FIGMA_URL,
+        params: [
+          { property: 'opacity', value: '0 → 1 · 150 ms · ease-out', source: 'propozycja' },
+          { property: 'y', value: '−4 px → 0', source: 'propozycja' },
+          { property: 'scaleY', value: '0.96 → 1', source: 'propozycja' },
+          { property: 'y, scaleY — timing', value: '200 ms · cubic-bezier(0.16, 1, 0.3, 1)', source: 'propozycja' },
+          { property: 'transform-origin', value: 'top — krawędź przy polu', source: 'propozycja' },
+          { property: 'trigger', value: 'klik w pole · Enter · Spacja · ↓ ↑', source: 'decyzja FE' },
+          { property: 'prefers-reduced-motion', value: 'bez ruchu, fade 0.1 s', source: 'a11y' },
+        ],
+        code: MENU_SELECT_OPEN_CODE,
+        notes: (
+          <>
+            <p>
+              <strong>W Figmie menu nie ma animacji</strong> — ani w Design Systemie, ani w Platform for
+              dealers (2130:17715). Wartości w tabeli to propozycja do potwierdzenia.
+            </p>
+            <p>
+              Menu rośnie tylko w pionie (<code>scaleY</code>): ma szerokość pola, więc skalowanie w
+              poziomie rozjechałoby krawędzie menu i pola.
+            </p>
+          </>
+        ),
+        keywords: ['otwarcie', 'wejście', 'rozwinięcie', 'open', 'listbox', 'rocznik'],
+        preview: <SelectDemo mode="open" />,
+      },
+      {
+        id: 'menu-select-zamkniecie',
+        title: 'Select — zamknięcie',
+        description:
+          'Po wyborze opcji, kliknięciu poza menu albo Esc menu cofa się pod pole tą samą drogą — dwa razy szybciej, niż się otwierało.',
+        figmaNode: '81:993',
+        figmaUrl: DS_SELECT_FIGMA_URL,
+        params: [
+          { property: 'opacity', value: '1 → 0', source: 'propozycja' },
+          { property: 'y', value: '0 → −4 px', source: 'propozycja' },
+          { property: 'scaleY', value: '1 → 0.96', source: 'propozycja' },
+          { property: 'timing', value: '100 ms · cubic-bezier(0.4, 0, 1, 1) — wszystkie właściwości', source: 'propozycja' },
+          { property: 'transform-origin', value: 'top', source: 'propozycja' },
+          { property: 'trigger', value: 'wybór opcji · klik poza menu · Esc · Tab', source: 'decyzja FE' },
+          { property: 'prefers-reduced-motion', value: 'bez ruchu, fade 0.1 s', source: 'a11y' },
+        ],
+        code: MENU_SELECT_CLOSE_CODE,
+        notes: (
+          <>
+            <p>
+              Zamknięcie trwa połowę otwarcia i przyspiesza do końca (ease-in) — po wyborze opcji
+              interfejs od razu wraca do użytkownika.
+            </p>
+            <p>
+              Fokus przez cały czas zostaje na polu (combobox z <code>aria-activedescendant</code>), więc
+              po zamknięciu nie trzeba go przywracać.
+            </p>
+          </>
+        ),
+        keywords: ['zamknięcie', 'wyjście', 'zwinięcie', 'close', 'exit'],
+        preview: <SelectDemo mode="close" />,
+      },
+      {
+        id: 'menu-button-pojawienie-sie',
+        title: 'Button — pojawienie się',
+        description:
+          'Menu akcji wyrasta z prawego górnego rogu przycisku „⋯”: skaluje się z 95% i opada o 4 px. Otwarte klawiaturą ustawia fokus na pierwszej pozycji.',
+        figmaNode: '81:993',
+        figmaUrl: DS_SELECT_FIGMA_URL,
+        params: [
+          { property: 'opacity', value: '0 → 1 · 150 ms · ease-out', source: 'propozycja' },
+          { property: 'y', value: '−4 px → 0', source: 'propozycja' },
+          { property: 'scale', value: '0.95 → 1', source: 'propozycja' },
+          { property: 'y, scale — timing', value: '200 ms · cubic-bezier(0.16, 1, 0.3, 1)', source: 'propozycja' },
+          { property: 'transform-origin', value: 'top right — róg przycisku', source: 'propozycja' },
+          { property: 'trigger', value: 'klik w przycisk · Enter · Spacja · ↓ ↑', source: 'decyzja FE' },
+          { property: 'prefers-reduced-motion', value: 'bez ruchu, fade 0.1 s', source: 'a11y' },
+        ],
+        code: MENU_BUTTON_OPEN_CODE,
+        notes: (
+          <>
+            <p>
+              <strong>W Figmie menu nie ma animacji</strong> — wartości to propozycja do potwierdzenia.
+            </p>
+            <p>
+              Figma pokazuje przycisk tylko przy otwartym menu (tło <code>rgba(24, 24, 27, 0.1)</code>);
+              stan domyślny i hover są do potwierdzenia.
+            </p>
+          </>
+        ),
+        keywords: ['otwarcie', 'wejście', 'menu akcji', 'icon button', 'kebab', 'open'],
+        preview: <MenuButtonDemo mode="open" />,
+      },
+      {
+        id: 'menu-button-zamkniecie',
+        title: 'Button — zamknięcie',
+        description:
+          'Po wyborze akcji, kliknięciu poza menu albo Esc menu kurczy się z powrotem do rogu przycisku i gaśnie.',
+        figmaNode: '81:993',
+        figmaUrl: DS_SELECT_FIGMA_URL,
+        params: [
+          { property: 'opacity', value: '1 → 0', source: 'propozycja' },
+          { property: 'y', value: '0 → −4 px', source: 'propozycja' },
+          { property: 'scale', value: '1 → 0.95', source: 'propozycja' },
+          { property: 'timing', value: '100 ms · cubic-bezier(0.4, 0, 1, 1) — wszystkie właściwości', source: 'propozycja' },
+          { property: 'transform-origin', value: 'top right', source: 'propozycja' },
+          { property: 'trigger', value: 'wybór akcji · klik poza menu · Esc · Tab', source: 'decyzja FE' },
+          { property: 'prefers-reduced-motion', value: 'bez ruchu, fade 0.1 s', source: 'a11y' },
+        ],
+        code: MENU_BUTTON_CLOSE_CODE,
+        notes: (
+          <p>
+            Te same czasy co w Select, więc oba menu zamykają się jednakowo. Po wyborze akcji albo Esc
+            fokus wraca na przycisk; po kliknięciu poza menu zostaje tam, gdzie kliknięto.
+          </p>
+        ),
+        keywords: ['zamknięcie', 'wyjście', 'menu akcji', 'close', 'exit'],
+        preview: <MenuButtonDemo mode="close" />,
+      },
+    ],
+  },
 ];
 
 /* ── Menu i indeks wyszukiwarki (liczone z treści) ────────────────────────── */
@@ -183,7 +401,7 @@ const SEARCH_DOCS: SearchDoc[] = [
       fields: [
         { label: 'Opis', text: component.summary, weight: 3 },
         ...keywordsField(component.keywords),
-        { label: 'Plik', text: component.file, weight: 2 },
+        { label: 'Plik', text: component.files.join(', '), weight: 2 },
       ],
     },
     ...component.entries.map((entry) => ({
@@ -235,7 +453,13 @@ export default function AnimacjePage() {
               </h2>
               <p className={styles.componentSummary}>{component.summary}</p>
               <p className={styles.meta}>
-                Komponent: <code>{component.file}</code>
+                {component.files.length > 1 ? 'Pliki: ' : 'Komponent: '}
+                {component.files.map((file, index) => (
+                  <Fragment key={file}>
+                    {index > 0 ? ' · ' : null}
+                    <code>{file}</code>
+                  </Fragment>
+                ))}
               </p>
             </header>
 

@@ -1,0 +1,33 @@
+/* Select Menu — panel wspólny dla obu wariantów.
+ * Fallbacki = wartości z Figmy (Design System, strona „Select”;
+ * cień: Light/Elevation/flyout). */
+
+.panel {
+  position: absolute;
+  z-index: 10;
+  padding: 4px;
+  background: var(--backgrounds-bg-field-component, #ffffff);
+  border-radius: 8px;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.08),
+    0 4px 8px 0 rgba(0, 0, 0, 0.08),
+    0 8px 16px 0 rgba(0, 0, 0, 0.08);
+  overflow: clip;
+}
+
+/* Pod polem: szerokość pola, rośnie od górnej krawędzi */
+.select {
+  top: calc(100% + var(--spacing-8, 8px));
+  left: 0;
+  right: 0;
+  transform-origin: top center;
+}
+
+/* Pod przyciskiem: wyrównane do jego prawej krawędzi, rośnie z prawego górnego rogu */
+.button {
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 171px;
+  width: max-content;
+  transform-origin: top right;
+}
