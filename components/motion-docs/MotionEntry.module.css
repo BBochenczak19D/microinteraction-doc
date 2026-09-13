@@ -123,6 +123,20 @@
 .params code {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 12px;
+  overflow-wrap: anywhere; /* długi token (np. <AnimatePresence>) łamie się zamiast rozpychać tabelę */
+}
+
+/* Telefon: tabela musi się zmieścić w szerokości ekranu */
+@media (max-width: 600px) {
+  .params th,
+  .params td {
+    padding: 8px 6px;
+  }
+
+  .params tbody th {
+    width: auto;
+    white-space: normal;
+  }
 }
 
 .code {

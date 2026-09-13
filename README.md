@@ -33,28 +33,46 @@ Strona: http://localhost:3000
 4. Dostajesz stały adres typu `nazwa-repo.vercel.app`. Każdy push na `main`
    aktualizuje stronę, więc link wysyłasz raz.
 
+## Struktura
+
+- `app/page.tsx` — cała treść w tablicy `COMPONENTS` (komponent → animacje). Z niej powstają
+  sekcje strony, menu w sidebarze i indeks wyszukiwarki.
+- `components/motion-docs/MotionEntry.tsx` — sekcja jednej animacji: podgląd, tabela, snippet, uwagi.
+- `components/motion-docs/Sidebar.tsx` — menu, lista komponentów, wyszukiwarka; poniżej 960 px szuflada.
+- `components/motion-docs/search.ts` — logika wyszukiwania.
+- `components/motion-docs/demos/` — podglądy do sceny (np. toast, który naprawdę się zamyka).
+- `components/Toast.tsx` — komponent produkcyjny, specyfikacja animacji w komentarzu na górze.
+
 ## Dodanie kolejnej animacji
 
-Jeden komponent = jeden `<MotionEntry>` w `app/page.tsx`:
+Nowy obiekt w `entries` komponentu w `app/page.tsx` (albo nowy komponent w `COMPONENTS`):
 
 ```tsx
-<MotionEntry
-  title="Nazwa — rodzaj animacji"
-  description="Kiedy się pojawia i co komunikuje."
-  figmaNode="0000:00000"
-  figmaUrl="https://www.figma.com/design/..."
-  params={[{ property: 'opacity', value: '0 → 1', source: 'Figma' }]}
-  code={SNIPPET}
->
-  {(runKey) => <Komponent key={runKey} />}
-</MotionEntry>
+{
+  id: 'toast-znikniecie',        // kotwica: /#toast-znikniecie
+  title: 'Zniknięcie',
+  description: 'Kiedy się pojawia i co komunikuje.',
+  figmaNode: '0000:00000',
+  figmaUrl: 'https://www.figma.com/design/...',
+  params: [{ property: 'opacity', value: '1 → 0', source: 'Figma' }],
+  code: SNIPPET,
+  notes: <p>…</p>,
+  keywords: ['wyjście', 'exit'], // synonimy dla wyszukiwarki
+  preview: <Komponent />,
+}
 ```
 
-`runKey` musi trafić na `key` animowanego elementu — dzięki temu przycisk
-„Odtwórz ponownie” remontuje komponent i animacja startuje od zera.
+Menu i wyszukiwarka aktualizują się same. „Odtwórz ponownie” remontuje scenę, więc animacja
+wejścia startuje od zera — podgląd nie musi nic o tym wiedzieć.
+
+## Wyszukiwarka
+
+Szuka od razu przy pisaniu: w tytułach, opisach, parametrach, uwagach, snippetach i hasłach.
+Ignoruje wielkość liter i polskie znaki („znikniecie” = „Zniknięcie”, „-51” = „−51”).
+`/` albo `Ctrl + K` przenosi do pola, strzałki wybierają wynik, Enter przechodzi, Esc czyści.
 
 ## Status
 
 | Komponent | Wejście | Wyjście | Uwagi |
 | --- | --- | --- | --- |
-| Toast | gotowe (Figma 2116:26967) | do zaprojektowania | kolor ikony statusu do potwierdzenia |
+| Toast | gotowe (Figma 2116:26967) | gotowe — wejście w odwrotnym kierunku, po kliknięciu „×” | kolor ikony statusu do potwierdzenia |

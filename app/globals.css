@@ -32,3 +32,20 @@ body {
 body {
   font-family: var(--family-body), system-ui, sans-serif;
 }
+
+/* Skoki do sekcji z menu i wyszukiwarki */
+html {
+  scroll-padding-top: 24px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@media (max-width: 959px) {
+  html {
+    scroll-padding-top: 80px; /* zapas na górny pasek z menu */
+  }
+}

@@ -14,6 +14,8 @@ export type MotionParam = {
 };
 
 export type MotionEntryProps = {
+  /** Kotwica sekcji — cel linków z menu i wyszukiwarki, np. „toast-znikniecie”. */
+  id?: string;
   title: string;
   /** Krótko: czym jest komponent i kiedy się pojawia. */
   description: string;
@@ -33,6 +35,7 @@ export type MotionEntryProps = {
 };
 
 export default function MotionEntry({
+  id,
   title,
   description,
   figmaNode,
@@ -45,9 +48,9 @@ export default function MotionEntry({
   const [runKey, setRunKey] = useState(0);
 
   return (
-    <section className={styles.entry}>
+    <section id={id} className={styles.entry}>
       <header className={styles.header}>
-        <h2 className={styles.title}>{title}</h2>
+        <h3 className={styles.title}>{title}</h3>
         {figmaNode ? (
           figmaUrl ? (
             <a className={styles.node} href={figmaUrl} target="_blank" rel="noreferrer">
