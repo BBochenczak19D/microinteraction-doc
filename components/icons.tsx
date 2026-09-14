@@ -63,6 +63,28 @@ export function TriangleLeftMiniIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+/**
+ * Loader z „BottomSheet / ActionButtons” (Type=Loader), 42.21 × 42 — dwa łuki, eksport z Figmy.
+ * `spinClassName` trafia na grupę z łukami: środek okręgu to (21.83, 19.57), a nie środek ramki,
+ * więc obracana jest grupa wokół tego punktu — inaczej łuki „pływałyby” o ~1.5 px.
+ */
+export function LoaderIcon({ spinClassName, ...props }: SVGProps<SVGSVGElement> & { spinClassName?: string }) {
+  return (
+    <svg width="42.2133" height="42" viewBox="0 0 42.2133 42" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <g className={spinClassName}>
+        <path
+          d="M27.8482 4.67579C28.9187 4.88665 31.005 6.00725 31.9162 6.6399C35.0055 8.80153 37.1143 12.0946 37.7811 15.7993C38.1465 17.8724 37.9538 22.1424 36.7656 23.8294C36.555 23.8495 36.6279 23.8493 36.4111 23.7273C36.3432 23.599 36.2986 23.4284 36.3499 23.2853C38.1045 18.4124 36.4517 13.3836 32.8093 9.86396C27.2456 5.04426 20.1393 5.25737 14.8525 10.3326C14.245 9.81271 13.4302 8.97129 12.8379 8.3964C16.9682 4.35043 22.274 3.03929 27.8482 4.67579Z"
+          fill="#499AD9"
+        />
+        <path
+          d="M32.1089 31.809C31.9592 31.6169 31.9258 31.5787 31.7421 31.4203C31.4092 31.4379 30.6077 32.0731 30.2073 32.3077C29.5 32.7165 28.7566 33.0591 27.9865 33.3314C17.7432 36.9349 6.96478 27.8395 9.05147 17.1428C9.37735 15.4715 9.8107 14.4025 10.5546 12.8734C9.65682 12.3773 8.75448 11.8893 7.84819 11.4098L7.38706 12.3524C6.42955 14.5026 5.93199 16.3695 5.87449 18.7486C5.73106 23.1877 7.38899 27.4952 10.4719 30.692C13.4068 33.71 17.41 35.4545 21.6187 35.5496C25.1837 35.615 29.5141 34.3131 32.1089 31.809Z"
+          fill="#E1B93B"
+        />
+      </g>
+    </svg>
+  );
+}
+
 /** triangle-right-mini, 15 × 15 — następny miesiąc w kalendarzu. */
 export function TriangleRightMiniIcon(props: SVGProps<SVGSVGElement>) {
   return (

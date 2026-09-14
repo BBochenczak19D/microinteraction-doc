@@ -41,16 +41,21 @@ Strona: http://localhost:3000
 - `components/motion-docs/Sidebar.tsx` — menu, lista komponentów, wyszukiwarka; poniżej 960 px szuflada.
 - `components/motion-docs/search.ts` — logika wyszukiwania.
 - `components/motion-docs/demos/` — podglądy do sceny (toast, Select, menu akcji, paginacja,
-  segment control, date picker).
+  segment control, date picker, tooltip, modal z formularzem pojazdu).
 - `components/motion.ts` — wspólny styl animacji (czasy, krzywe, dystans, skala) i gotowe przepisy:
-  `popoverMotion`, `swapMotion`, `viewMotion`, `moveTransition`; te same wartości jako zmienne CSS
-  `--motion-*` w `app/globals.css`.
+  `popoverMotion`, `anchoredMotion`, `swapMotion`, `viewMotion`, `sheetMotion`, `dialogMotion`,
+  `overlayMotion`, `moveTransition`; te same wartości jako zmienne CSS `--motion-*` w `app/globals.css`.
 - `components/Toast.tsx` — komponent produkcyjny, specyfikacja animacji w komentarzu na górze.
 - `components/Menu.tsx` — panel menu rozwijanego i specyfikacja jego animacji (warianty Select i Button).
 - `components/Select.tsx`, `components/MenuButton.tsx` — komponenty, które otwierają to menu.
 - `components/Pagination.tsx` — paginacja (Default, Compact, Mini) ze specyfikacją animacji.
 - `components/SegmentedControl.tsx` — segment control (2–4 opcje, marki Uniwersal, Estigroup, Estimoto).
 - `components/DatePicker.tsx` — pole z kalendarzem (dni, miesiące, lata); `Calendar` działa też osobno.
+- `components/Tooltip.tsx` — tooltip (portal, 4 strony, opóźnienia 400 / 100 / 300 ms) oraz `TooltipText`,
+  `Kbd` i `TooltipDivider` do typów z Figmy.
+- `components/Modal.tsx` — modal: bottom sheet na mobile, okno na desktopie, stopka z przyciskami albo loaderem.
+- `components/useControllable.ts` — stan sterowany z zewnątrz albo trzymany w komponencie.
+- `public/tooltip/items-thumbnail.png` — miniatura z typu Items (eksport z Figmy zmniejszony do 60 × 80 px).
 - `components/icons.tsx` — ikony Medusa UI wyeksportowane z Figmy (nie ma ich w heroicons).
 
 ## Styl animacji
@@ -65,10 +70,15 @@ zniknięcie krótsze od pojawienia się:
 | zniknięcie | 150 ms · `cubic-bezier(0.4, 0, 1, 1)` |
 | zmiana stanu (hover, fokus) | 150 ms · ease-out |
 | dystans / skala | 2 px / 0.98 → 1 |
+| panel zza krawędzi (bottom sheet) | 350 ms wejście / 250 ms wyjście · te same krzywe |
+| tooltip | pokazanie po 400 ms · ukrycie po 100 ms · kolejny od razu przez 300 ms |
+| loader | pełny obrót 1.2 s, liniowo |
 
 Nowa animacja bez danych z Figmy bierze wartości i przepisy z `components/motion.ts`, nie wymyśla
-własnych: warstwa nad treścią — `popoverMotion`, zamiana treści w miejscu — `swapMotion`, zmiana
-widoku — `viewMotion`, przesuwane tło zaznaczenia — `moveTransition` z `layoutId`.
+własnych: warstwa pod elementem — `popoverMotion`, przy elemencie z dowolnej strony — `anchoredMotion`,
+zamiana treści w miejscu — `swapMotion`, zmiana widoku — `viewMotion`, przesuwane tło zaznaczenia —
+`moveTransition` z `layoutId`, panel z dołu — `sheetMotion`, okno na środku — `dialogMotion`, tło pod
+nimi — `overlayMotion`.
 Toast ma wartości z eksportu Figmy i zostaje przy nich.
 
 ## Dodanie kolejnej animacji
@@ -108,4 +118,6 @@ Ignoruje wielkość liter i polskie znaki („znikniecie” = „Zniknięcie”,
 | Menu — Button | pojawienie się, zamknięcie | propozycja, wspólny styl | tło przycisku z tokenów DS; 10% przy otwartym menu z Figmy |
 | Paginacja | zmiana strony, przesunięcie zakresu, stany | propozycja + stany z Figmy (903:635) | zakres Default: strona ±1 |
 | Segment control | przełączenie, stany i marki | propozycja + stany z Figmy (349:757) | tło przejeżdża jak w paginacji |
-| Date picker | otwarcie, zmiana miesiąca, wybór dnia, miesiące i lata | propozycja + stany z Figmy (94:13340) | hover nagłówka z tokenu DS (w Figmie brak) |
+| Date picker | otwarcie, zmiana miesiąca, wybór dnia, miesiące i lata | propozycja + stany z Figmy (94:13340) | tylko wariant Single; hover nagłówka z tokenu DS (w Figmie brak) |
+| Tooltip | pojawienie się i zniknięcie, kierunki, 7 typów | propozycja + wygląd z Figmy (671:207) | opóźnienia 400 / 100 / 300 ms |
+| Modal | mobile (bottom sheet), web (okno), zapisywanie z loaderem | propozycja + wygląd z Figmy (803:168) | kolor tła pod modalem do potwierdzenia |

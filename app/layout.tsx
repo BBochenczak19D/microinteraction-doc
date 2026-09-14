@@ -5,7 +5,7 @@ import './globals.css';
 
 const montserrat = Montserrat({
   subsets: ['latin', 'latin-ext'],
-  weight: ['400', '600'],
+  weight: ['400', '500', '600'], // 500 = Medium z design systemu (etykiety, tooltipy, opcje menu)
   variable: '--family-body',
   display: 'swap',
 });

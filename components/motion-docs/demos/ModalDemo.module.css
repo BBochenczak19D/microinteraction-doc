@@ -1,0 +1,164 @@
+.demo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  font-family: var(--family-body, 'Montserrat', system-ui, sans-serif);
+}
+
+/* Ramka urządzenia — modal jest w niej zamknięty (Modal contained) */
+.frame {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--backgrounds-bg-subtle, #f4f4f5);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.08),
+    0 8px 24px 0 rgba(0, 0, 0, 0.08);
+}
+
+/* Telefon 360 × 640; panel zaczyna się 56 px od góry */
+.frame[data-device='mobile'] {
+  width: min(360px, 100%);
+  height: 640px;
+  border-radius: 28px;
+  --modal-sheet-top: 56px;
+}
+
+/* Przeglądarka — cała szerokość sceny */
+.frame[data-device='desktop'] {
+  width: 100%;
+  height: 560px;
+  border-radius: 12px;
+}
+
+.browserBar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  height: 28px;
+  padding: 0 12px;
+  background: #e4e4e7;
+}
+
+.browserBar span {
+  width: 8px;
+  height: 8px;
+  background: #ffffff;
+  border-radius: 50%;
+}
+
+.screen {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ── Makieta strony pod modalem ── */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.08),
+    0 1px 2px 0 rgba(0, 0, 0, 0.08);
+}
+
+.cardText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cardTitle {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--foregrounds-fg-base, #18181b);
+}
+
+.cardMeta {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--foregrounds-fg-muted, #71717a);
+}
+
+.openButton {
+  flex-shrink: 0;
+  height: 36px;
+  padding: 0 14px;
+  font: inherit;
+  font-size: var(--font-size-small, 13px);
+  font-weight: 600;
+  color: var(--buttons-text-primary, #ffffff);
+  white-space: nowrap;
+  background: var(--estigroup-primary, #3582ce);
+  border: 0;
+  border-radius: var(--radius-6, 6px);
+  box-shadow:
+    inset 0 0.75px 0 0 rgba(255, 255, 255, 0.2),
+    0 0 0 1px var(--sky-600, #3582ce),
+    0 1px 2px 0 var(--sky-800, #00598a);
+  cursor: pointer;
+  transition: background-color var(--motion-duration-state, 150ms) var(--motion-ease-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.openButton:hover {
+  background: var(--backgrounds-bg-interactive-hover, #0069a8);
+}
+
+.openButton:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 4px 0;
+}
+
+.skeleton span {
+  height: 10px;
+  background: #e4e4e7;
+  border-radius: 5px;
+}
+
+.skeleton span:nth-child(1) {
+  width: 80%;
+}
+
+.skeleton span:nth-child(2) {
+  width: 55%;
+}
+
+.skeleton span:nth-child(3) {
+  width: 68%;
+}
+
+.hint {
+  max-width: 60ch;
+  margin: 0;
+  min-height: 16px;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--foregrounds-fg-muted, #71717a);
+  text-align: center;
+}

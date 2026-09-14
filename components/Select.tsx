@@ -9,6 +9,7 @@ import {
   useState,
   type KeyboardEvent,
   type MouseEvent,
+  type ReactNode,
 } from 'react';
 
 import { CheckMiniIcon, TrianglesMiniIcon } from './icons';
@@ -30,6 +31,8 @@ export type SelectOption = {
 
 export type SelectProps = {
   label: string;
+  /** Obok etykiety, ale poza nią — np. ikona informacji z tooltipem (nie wchodzi do nazwy pola). */
+  labelAddon?: ReactNode;
   options: SelectOption[];
   value: string | null;
   onChange: (value: string) => void;
@@ -46,6 +49,7 @@ const TYPEAHEAD_RESET = 500;
 
 export default function Select({
   label,
+  labelAddon,
   options,
   value,
   onChange,
@@ -182,9 +186,12 @@ export default function Select({
 
   return (
     <div className={className ? `${styles.select} ${className}` : styles.select}>
-      <span id={labelId} className={styles.label}>
-        {label}
-      </span>
+      <div className={styles.labelRow}>
+        <span id={labelId} className={styles.label}>
+          {label}
+        </span>
+        {labelAddon}
+      </div>
 
       <div ref={controlRef} className={styles.control}>
         <button

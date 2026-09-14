@@ -14,6 +14,7 @@ import {
   viewMotion,
   viewMotionReduced,
 } from './motion';
+import { useControllable } from './useControllable';
 import styles from './DatePicker.module.css';
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -122,17 +123,6 @@ export function formatDate(date: Date) {
 }
 
 const dayLabel = (date: Date) => `${date.getDate()} ${MONTHS_GENITIVE[date.getMonth()]} ${date.getFullYear()}`;
-
-/** Wartość sterowana z zewnątrz albo trzymana w środku — jak w Select i MenuButton. */
-function useControllable<T>(controlled: T | undefined, initial: T, onChange?: (value: T) => void) {
-  const [uncontrolled, setUncontrolled] = useState(initial);
-  const value = controlled !== undefined ? controlled : uncontrolled;
-  const setValue = (next: T) => {
-    if (controlled === undefined) setUncontrolled(next);
-    onChange?.(next);
-  };
-  return [value, setValue] as const;
-}
 
 /* ── Kalendarz ────────────────────────────────────────────────────────────── */
 

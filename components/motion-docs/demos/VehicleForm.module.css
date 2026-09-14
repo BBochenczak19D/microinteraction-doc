@@ -1,0 +1,298 @@
+/* Formularz z Figmy (BottomSheet → Wrapper): mobile — jedna kolumna, sekcje co 32 px;
+ * desktop — pola po dwa w rzędzie co 16 px, sekcje co 24 px. */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  font-family: var(--family-body, 'Montserrat', system-ui, sans-serif);
+  color: var(--foregrounds-fg-base, #18181b);
+}
+
+.form[data-device='desktop'] {
+  gap: 24px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+
+.form[data-device='desktop'] .grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.pair {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pair > * {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.form[data-device='desktop'] .pair {
+  flex-direction: row;
+  gap: 32px;
+}
+
+/* Wąskie okno (kontener: treść modala) — jedna kolumna także na desktopie */
+@container (max-width: 560px) {
+  .form[data-device='desktop'] .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .form[data-device='desktop'] .pair {
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+/* ── Input with label ── */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.labelRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.label {
+  font-size: var(--font-size-text-sm, 14px);
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  color: var(--foregrounds-fg-base, #18181b);
+}
+
+/* heroicons-outline/information-circle 20 px; pole kliknięcia 32 px */
+.info {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  color: var(--foregrounds-fg-muted, #71717a);
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: color var(--motion-duration-state, 150ms) var(--motion-ease-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.info::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+}
+
+.info:hover {
+  color: var(--foregrounds-fg-base, #18181b);
+}
+
+.info:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 1px;
+}
+
+.infoIcon {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
+/* Text Input — 44 px; Text Sufix 44 px z lewą kreską */
+.input {
+  display: flex;
+  align-items: stretch;
+  height: 44px;
+  overflow: hidden;
+  background: var(--backgrounds-bg-field-component, #ffffff);
+  border-radius: var(--radius-6, 6px);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.08),
+    0 1px 2px 0 rgba(0, 0, 0, 0.12);
+  transition:
+    background-color var(--motion-duration-state, 150ms) var(--motion-ease-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    box-shadow var(--motion-duration-state, 150ms) var(--motion-ease-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.input:hover {
+  background: var(--backgrounds-bg-field-component-hover, #fafafa);
+}
+
+.input:focus-within,
+.textarea:focus {
+  box-shadow:
+    0 0 0 1px #2563eb,
+    0 0 0 4px rgba(37, 99, 235, 0.2);
+}
+
+.inputControl {
+  flex: 1;
+  min-width: 0;
+  padding: 0 16px;
+  font: inherit;
+  font-size: var(--font-size-text-sm, 14px);
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--foregrounds-fg-base, #18181b);
+  background: transparent;
+  border: 0;
+  outline: none;
+}
+
+.inputControl::placeholder,
+.textarea::placeholder {
+  color: var(--foregrounds-fg-muted, #71717a);
+  opacity: 1;
+}
+
+.suffix {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  font-size: var(--font-size-small, 13px);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  border-left: 1px solid var(--borders-border-base, #e5e5e5);
+}
+
+/* Text Area Input — 122 px, 12 × 16 */
+.textarea {
+  display: block;
+  width: 100%;
+  min-height: 122px;
+  padding: 12px 16px;
+  font: inherit;
+  font-size: var(--font-size-text-sm, 14px);
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--foregrounds-fg-base, #18181b);
+  background: var(--backgrounds-bg-field-component, #ffffff);
+  border: 0;
+  border-radius: var(--radius-6, 6px);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.08),
+    0 1px 2px 0 rgba(0, 0, 0, 0.12);
+  outline: none;
+  resize: vertical;
+  transition: box-shadow var(--motion-duration-state, 150ms) var(--motion-ease-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+/* ── Checkbox Section: wiersze 42 px, Tak / Nie ── */
+
+.radios {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.radioRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 42px;
+}
+
+.radioOptions {
+  display: flex;
+  gap: 8px;
+}
+
+.radioLabel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--font-size-text-base, 16px);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+}
+
+.radioInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+}
+
+/* Radio Medium — pole 32 px, kółko inset 15%, kropka 6 px */
+.radio {
+  position: relative;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+}
+
+.radio::before,
+.radio::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  transition:
+    background-color var(--motion-duration-state, 150ms) var(--motion-ease-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    box-shadow var(--motion-duration-state, 150ms) var(--motion-ease-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    opacity var(--motion-duration-state, 150ms) var(--motion-ease-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    transform var(--motion-duration-state, 150ms) var(--motion-ease-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.radio::before {
+  inset: 15%;
+  background: var(--backgrounds-bg-component, #fafafa);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.08),
+    0 1px 2px 0 rgba(0, 0, 0, 0.12);
+}
+
+.radio::after {
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  background: var(--foregrounds-fg-on-color, #ffffff);
+  box-shadow: 0 1px 2px 0 rgba(30, 58, 138, 0.6);
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+.radioInput:checked + .radio::before {
+  background: var(--foregrounds-fg-interactive, #3582ce);
+  box-shadow:
+    0 0 0 1px #2563eb,
+    0 1px 2px 0 rgba(30, 58, 138, 0.5);
+}
+
+.radioInput:checked + .radio::after {
+  opacity: 1;
+  transform: none;
+}
+
+.radioInput:focus-visible + .radio::before {
+  box-shadow:
+    0 0 0 1px #2563eb,
+    0 0 0 4px rgba(37, 99, 235, 0.2);
+}
+
+/* Kraj pochodzenia pod „Importowany pojazd” — 316 px jak w Figmie */
+.country {
+  max-width: 316px;
+}

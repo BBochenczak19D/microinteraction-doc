@@ -6,10 +6,12 @@ import MotionEntry, { type MotionParam } from '@/components/motion-docs/MotionEn
 import Sidebar, { type NavGroup } from '@/components/motion-docs/Sidebar';
 import DatePickerDemo from '@/components/motion-docs/demos/DatePickerDemo';
 import MenuButtonDemo from '@/components/motion-docs/demos/MenuButtonDemo';
+import ModalDemo from '@/components/motion-docs/demos/ModalDemo';
 import PaginationDemo from '@/components/motion-docs/demos/PaginationDemo';
 import SegmentedControlDemo from '@/components/motion-docs/demos/SegmentedControlDemo';
 import SelectDemo from '@/components/motion-docs/demos/SelectDemo';
 import ToastDemo from '@/components/motion-docs/demos/ToastDemo';
+import TooltipDemo from '@/components/motion-docs/demos/TooltipDemo';
 import { nodeToText, type SearchDoc } from '@/components/motion-docs/search';
 import styles from './page.module.css';
 
@@ -52,13 +54,16 @@ const MOTION_STYLE_SUMMARY =
   'Wspólne wartości dla komponentów, które w Figmie nie mają animacji: subtelnie, bez sprężyn, zniknięcie krótsze od pojawienia się. Element wjeżdża albo rośnie od strony, z której przychodzi.';
 
 const MOTION_STYLE: MotionParam[] = [
-  { property: 'pojawienie się, ruch', value: '250 ms · cubic-bezier(0.22, 1, 0.36, 1)', source: 'menu, kalendarz, tło aktywnej strony, segmentu i dnia' },
-  { property: 'fade przy pojawieniu', value: '200 ms · ta sama krzywa', source: 'menu, kalendarz, numery paginacji, miesiące i widoki kalendarza' },
-  { property: 'zniknięcie', value: '150 ms · cubic-bezier(0.4, 0, 1, 1)', source: 'menu, kalendarz, numery paginacji, miesiące i widoki kalendarza' },
-  { property: 'zmiana stanu', value: '150 ms · cubic-bezier(0.22, 1, 0.36, 1)', source: 'hover, fokus, wciśnięcie' },
-  { property: 'dystans', value: '2 px', source: 'menu i kalendarz (y), numery paginacji i miesiące (x)' },
-  { property: 'skala', value: '0.98 → 1', source: 'menu, kalendarz, widoki miesięcy i lat' },
-  { property: 'prefers-reduced-motion', value: 'bez ruchu, same fade’y w tych samych czasach', source: 'wszystkie' },
+  { property: 'pojawienie się, ruch', value: '250 ms · cubic-bezier(0.22, 1, 0.36, 1)', source: 'menu, kalendarz, tooltip, okno modala, tło aktywnej strony, segmentu i dnia, wysokość stopki modala' },
+  { property: 'fade przy pojawieniu', value: '200 ms · ta sama krzywa', source: 'menu, kalendarz, tooltip, okno modala, numery paginacji, miesiące, widoki kalendarza, loader w stopce' },
+  { property: 'zniknięcie', value: '150 ms · cubic-bezier(0.4, 0, 1, 1)', source: 'menu, kalendarz, tooltip, okno modala, numery paginacji, miesiące, widoki kalendarza, przyciski w stopce' },
+  { property: 'zmiana stanu', value: '150 ms · cubic-bezier(0.22, 1, 0.36, 1)', source: 'hover, fokus, wciśnięcie, zaznaczenie radio' },
+  { property: 'dystans', value: '2 px', source: 'menu i kalendarz (y), tooltip (od elementu), numery paginacji i miesiące (x)' },
+  { property: 'skala', value: '0.98 → 1', source: 'menu, kalendarz, tooltip, okno modala, widoki miesięcy i lat, loader w stopce' },
+  { property: 'panel zza krawędzi', value: '350 ms wejście · 250 ms wyjście · te same krzywe', source: 'bottom sheet (mobile) i tło pod nim' },
+  { property: 'opóźnienia tooltipa', value: 'pokazanie 400 ms · ukrycie 100 ms · kolejny bez opóźnienia przez 300 ms', source: 'tooltip' },
+  { property: 'loader', value: 'pełny obrót 1.2 s · liniowo', source: 'stopka modala (Type=Loader)' },
+  { property: 'prefers-reduced-motion', value: 'bez ruchu, same fade’y w tych samych czasach; loader dalej się obraca', source: 'wszystkie' },
 ];
 
 /* ── Toast ── */
@@ -408,6 +413,182 @@ const viewMotion = {
     {view === 'days' ? <Days /> : view === 'months' ? <Months /> : <Years />}
   </motion.div>
 </AnimatePresence>`;
+
+/* ── Tooltip ── */
+
+const DS_TOOLTIP_FIGMA_URL =
+  'https://www.figma.com/design/LorGLqilmfYrIQp72jTOHB/Design-System?node-id=671-207';
+
+const TOOLTIP_HOVER_CODE = `// anchoredMotion w components/motion.ts — ten sam przepis co menu, z dowolnej strony
+const EASE_OUT = [0.22, 1, 0.36, 1];
+const TOWARD_ANCHOR = { top: { y: 2 }, bottom: { y: -2 }, left: { x: 2 }, right: { x: -2 } };
+
+const tooltipMotion = {
+  closed: (side) => ({
+    opacity: 0,
+    scale: 0.98,
+    x: 0,
+    y: 0,
+    ...TOWARD_ANCHOR[side],
+    transition: { duration: 0.15, ease: [0.4, 0, 1, 1] },
+  }),
+  open: {
+    opacity: 1,
+    scale: 1,
+    x: 0,
+    y: 0,
+    transition: { opacity: { duration: 0.2, ease: EASE_OUT }, default: { duration: 0.25, ease: EASE_OUT } },
+  },
+};
+
+// najechanie: pokaż po 400 ms · zjechanie: ukryj po 100 ms · fokus z klawiatury: od razu
+<AnimatePresence>
+  {isOpen && (
+    <motion.div
+      key="tooltip"
+      role="tooltip"
+      id={tooltipId} // na elemencie: aria-describedby={tooltipId}
+      data-side={side} // [data-side='top'] { transform-origin: bottom center; }
+      custom={side}
+      variants={tooltipMotion}
+      initial="closed"
+      animate="open"
+      exit="closed"
+    >
+      {content}
+    </motion.div>
+  )}
+</AnimatePresence>`;
+
+const TOOLTIP_PLACEMENT_CODE = `/* tooltip rośnie od krawędzi przy elemencie */
+.tooltip[data-side='top'] { transform-origin: bottom center; }
+.tooltip[data-side='bottom'] { transform-origin: top center; }
+.tooltip[data-side='left'] { transform-origin: center right; }
+.tooltip[data-side='right'] { transform-origin: center left; }
+
+// położenie: portal do body, position: fixed, 8 px od elementu
+const side = fits(preferred) || !fits(opposite(preferred)) ? preferred : opposite(preferred);
+// top:    top = trigger.top - 8 - height;   left = środek elementu - width / 2 (w granicach okna)
+// bottom: top = trigger.bottom + 8
+// left:   left = trigger.left - 8 - width;  top = środek elementu - height / 2
+// right:  left = trigger.right + 8`;
+
+const TOOLTIP_TYPES_CODE = `import Tooltip, { Kbd, TooltipDivider, TooltipText } from '@/components/Tooltip';
+
+// Type=Text — sam tekst
+<Tooltip content="Oznacz jako sprzedany">
+  <button type="button" aria-label="Oznacz jako sprzedany">…</button>
+</Tooltip>
+
+// Type=Shortcut
+<Tooltip content={<TooltipText>Szukaj <Kbd>⌘</Kbd><Kbd>/</Kbd></TooltipText>}>…</Tooltip>
+
+// Type=Items / Address — sekcje po 8 px rozdzielone kropkami
+<Tooltip
+  content={
+    <>
+      <div className="section">…</div>
+      <TooltipDivider />
+      <div className="section">…</div>
+    </>
+  }
+>
+  …
+</Tooltip>`;
+
+/* ── Modal ── */
+
+const DS_MODAL_FIGMA_URL =
+  'https://www.figma.com/design/LorGLqilmfYrIQp72jTOHB/Design-System?node-id=803-168';
+
+const MODAL_MOBILE_CODE = `// sheetMotion i overlayMotion w components/motion.ts
+const EASE_OUT = [0.22, 1, 0.36, 1];
+const EASE_IN = [0.4, 0, 1, 1];
+
+// .sheet { position: absolute; left: 0; right: 0; bottom: 0; top: 56px; border-radius: 16px 16px 0 0; }
+<AnimatePresence>
+  {isOpen && (
+    <div key="modal" className="layer">
+      <motion.div
+        className="overlay"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1, transition: { duration: 0.35, ease: EASE_OUT } }}
+        exit={{ opacity: 0, transition: { duration: 0.25, ease: EASE_IN } }}
+        onClick={close}
+      />
+      <motion.div
+        role="dialog"
+        aria-modal="true"
+        className="sheet"
+        initial={{ y: '100%' }}
+        animate={{ y: 0, transition: { duration: 0.35, ease: EASE_OUT } }}
+        exit={{ y: '100%', transition: { duration: 0.25, ease: EASE_IN } }}
+      >
+        …
+      </motion.div>
+    </div>
+  )}
+</AnimatePresence>`;
+
+const MODAL_DESKTOP_CODE = `// dialogMotion w components/motion.ts — jak menu, ale od środka i bez przesunięcia
+const EASE_OUT = [0.22, 1, 0.36, 1];
+const EXIT = { duration: 0.15, ease: [0.4, 0, 1, 1] };
+
+// .dialog { position: absolute; inset: 0; margin: auto; width: min(1469px, 100% - 48px); height: min(776px, 100% - 48px); }
+<AnimatePresence>
+  {isOpen && (
+    <div key="modal" className="layer">
+      <motion.div
+        className="overlay"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1, transition: { duration: 0.2, ease: EASE_OUT } }}
+        exit={{ opacity: 0, transition: EXIT }}
+        onClick={close}
+      />
+      <motion.div
+        role="dialog"
+        aria-modal="true"
+        className="dialog"
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{
+          opacity: 1,
+          scale: 1,
+          transition: { opacity: { duration: 0.2, ease: EASE_OUT }, default: { duration: 0.25, ease: EASE_OUT } },
+        }}
+        exit={{ opacity: 0, scale: 0.98, transition: EXIT }}
+      >
+        …
+      </motion.div>
+    </div>
+  )}
+</AnimatePresence>`;
+
+const MODAL_SAVING_CODE = `// viewMotion w components/motion.ts — przyciski i loader w tym samym miejscu
+// height = offsetHeight stanu, który się pojawia (69 ↔ 88 px na desktopie)
+<div className="footer" style={{ height }}>
+  <AnimatePresence initial={false}>
+    {saving ? (
+      <motion.div key="saving" className="saving" variants={viewMotion} initial="enter" animate="center" exit="exit">
+        <LoaderIcon spinClassName="spin" />
+        <span>Zapisywanie zmian</span>
+      </motion.div>
+    ) : (
+      <motion.div key="actions" className="actions" variants={viewMotion} initial="enter" animate="center" exit="exit">
+        <button type="button" className="secondary" onClick={close}>Anuluj</button>
+        <button type="button" className="primary" onClick={save}>Zapisz</button>
+      </motion.div>
+    )}
+  </AnimatePresence>
+</div>
+
+/* .actions, .saving { position: absolute; top: 0; left: 0; right: 0; } */
+.footer { transition: height 250ms cubic-bezier(0.22, 1, 0.36, 1); }
+.spin {
+  transform-box: view-box;
+  transform-origin: 21.83px 19.57px; /* środek okręgu łuków, nie ramki */
+  animation: spin 1.2s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }`;
 
 const COMPONENTS: DocComponent[] = [
   {
@@ -902,6 +1083,200 @@ const COMPONENTS: DocComponent[] = [
       },
     ],
   },
+  {
+    id: 'tooltip',
+    name: 'Tooltip',
+    summary:
+      'Krótka podpowiedź przy elemencie po najechaniu albo fokusie (Tooltip z design systemu) — siedem typów treści: Text, Shortcut, Return, Graph, Items, Address i Breadcrumbs.',
+    files: ['components/Tooltip.tsx', 'components/motion.ts'],
+    keywords: ['podpowiedź', 'hint', 'hover', 'najechanie', 'popover'],
+    entries: [
+      {
+        id: 'tooltip-pojawienie-sie',
+        title: 'Pojawienie się i zniknięcie',
+        description:
+          'Po najechaniu tooltip czeka 400 ms, potem pojawia się, odsuwa o 2 px od elementu i dorasta z 98%. Po zjechaniu kursorem gaśnie po 100 ms. Na sąsiednim elemencie kolejny tooltip pojawia się od razu.',
+        figmaNode: '671:207',
+        figmaUrl: DS_TOOLTIP_FIGMA_URL,
+        params: [
+          { property: 'opacity', value: '0 → 1 · 200 ms · ease-out', source: 'propozycja' },
+          { property: 'x / y', value: '2 px bliżej elementu → 0', source: 'propozycja' },
+          { property: 'scale', value: '0.98 → 1', source: 'propozycja' },
+          { property: 'x / y, scale — timing', value: '250 ms · cubic-bezier(0.22, 1, 0.36, 1)', source: 'propozycja' },
+          { property: 'zniknięcie', value: '150 ms · cubic-bezier(0.4, 0, 1, 1) — do wartości startowych', source: 'propozycja' },
+          { property: 'opóźnienie pokazania', value: '400 ms po najechaniu · fokus z klawiatury: od razu', source: 'propozycja' },
+          { property: 'opóźnienie ukrycia', value: '100 ms — kursor zdąży przejść na tooltip', source: 'a11y (WCAG 1.4.13)' },
+          { property: 'kolejny tooltip', value: 'bez opóźnienia, gdy poprzedni jest otwarty albo zamknął się < 300 ms temu', source: 'propozycja' },
+          { property: 'trigger', value: 'najechanie · fokus z klawiatury · zamykają: zjechanie, blur, Esc, kliknięcie', source: 'decyzja FE' },
+          { property: 'prefers-reduced-motion', value: 'bez ruchu i skali, fade 0.2 s / 0.15 s', source: 'a11y' },
+        ],
+        code: TOOLTIP_HOVER_CODE,
+        notes: (
+          <>
+            <p>
+              <strong>W Figmie tooltip nie ma animacji</strong> — wartości to propozycja we wspólnym stylu, ten sam
+              przepis co menu (<code>anchoredMotion</code>; dla strony „bottom” to <code>popoverMotion</code>).
+            </p>
+            <p>
+              Naraz otwarty jest jeden tooltip. Esc zamyka najpierw tooltip — modal pod nim zostaje otwarty. Na
+              ekranach dotykowych tooltip się nie pojawia.
+            </p>
+          </>
+        ),
+        keywords: ['hover', 'opóźnienie', 'delay', 'fokus', 'escape', 'wejście', 'wyjście'],
+        preview: <TooltipDemo mode="hover" />,
+      },
+      {
+        id: 'tooltip-kierunki',
+        title: 'Kierunki',
+        description:
+          'Tooltip może pojawić się nad, pod, z lewej albo z prawej strony elementu. Zawsze rośnie od krawędzi przy elemencie i odsuwa się od niego o 2 px.',
+        figmaNode: '671:207',
+        figmaUrl: DS_TOOLTIP_FIGMA_URL,
+        params: [
+          { property: 'odstęp od elementu', value: '8 px', source: 'propozycja (spacing-8)' },
+          { property: 'transform-origin', value: 'top: bottom center · bottom: top center · left: center right · right: center left', source: 'propozycja' },
+          { property: 'start ruchu', value: 'top: y +2 · bottom: y −2 · left: x +2 · right: x −2', source: 'propozycja' },
+          { property: 'brak miejsca', value: 'przejście na przeciwną stronę; w poprzek — w granicach okna, 8 px od krawędzi', source: 'decyzja FE' },
+          { property: 'położenie', value: 'portal do body, position: fixed, przeliczane przy przewijaniu', source: 'decyzja FE' },
+        ],
+        code: TOOLTIP_PLACEMENT_CODE,
+        notes: (
+          <p>
+            Tooltip jest w portalu, więc nie obcina go <code>overflow: hidden</code> rodzica — działa też w przewijanej
+            treści modala (ikony „i” w formularzu).
+          </p>
+        ),
+        keywords: ['placement', 'strona', 'kierunek', 'transform-origin', 'portal', 'flip'],
+        preview: <TooltipDemo mode="placement" />,
+      },
+      {
+        id: 'tooltip-typy',
+        title: 'Typy z Design Systemu',
+        description:
+          'Siedem typów z Figmy ma ten sam kontener i tę samą animację — zmienia się tylko treść: tekst, skrót klawiszowy, historia zwrotu, wykres, pozycje, adresy i ścieżka.',
+        figmaNode: '671:1320',
+        figmaUrl: DS_TOOLTIP_FIGMA_URL,
+        params: [
+          { property: 'kontener', value: 'bg #fafafa · radius 8 · cień Light/Elevation/tooltip', source: 'Figma' },
+          { property: 'tekst', value: '12 / 20 px · Medium · #18181b, drugorzędny #52525b', source: 'Figma' },
+          { property: 'Text, Shortcut, Breadcrumbs', value: 'padding 4 × 8 px · odstęp 6 px · Kbd 16 × 16', source: 'Figma' },
+          { property: 'Return, Graph', value: 'padding 8 px · odstęp 4 px · Graph 160 px', source: 'Figma' },
+          { property: 'Items, Address', value: 'sekcje po 8 px · separator z kropek 1 px co 3 px', source: 'Figma' },
+          { property: 'animacja', value: 'wspólna dla wszystkich typów', source: 'propozycja' },
+        ],
+        code: TOOLTIP_TYPES_CODE,
+        notes: (
+          <p>
+            Treść w Figmie to przykłady z Medusa UI (zwroty, SKU) — w podglądzie zamienione na przykłady z panelu
+            dealera. Miniatura w typie Items to eksport z Figmy zmniejszony do 60 × 80 px.
+          </p>
+        ),
+        keywords: ['text', 'shortcut', 'return', 'graph', 'items', 'address', 'breadcrumbs', 'kbd', 'skrót'],
+        preview: <TooltipDemo mode="types" />,
+      },
+    ],
+  },
+  {
+    id: 'modal',
+    name: 'Modal',
+    summary:
+      'Okno do prostego wprowadzania danych (BottomSheet z design systemu): na mobile panel wysuwany z dołu, na desktopie okno na środku; w stopce przyciski albo loader podczas zapisu.',
+    files: ['components/Modal.tsx', 'components/motion.ts'],
+    keywords: ['bottom sheet', 'dialog', 'okno', 'popup', 'zapis', 'loader'],
+    entries: [
+      {
+        id: 'modal-mobile',
+        title: 'Mobile — otwarcie i zamknięcie',
+        description:
+          'Bottom sheet wjeżdża zza dolnej krawędzi ekranu o całą swoją wysokość, a tło pod nim ciemnieje w tym samym czasie. Zamyka się tą samą drogą — szybciej, niż się otwierał.',
+        figmaNode: '803:689',
+        figmaUrl: DS_MODAL_FIGMA_URL,
+        params: [
+          { property: 'panel — y', value: '100% → 0 · 350 ms · cubic-bezier(0.22, 1, 0.36, 1)', source: 'propozycja' },
+          { property: 'tło — opacity', value: '0 → 1 · 350 ms · ta sama krzywa', source: 'propozycja' },
+          { property: 'zamknięcie', value: 'y → 100%, tło → 0 · 250 ms · cubic-bezier(0.4, 0, 1, 1)', source: 'propozycja' },
+          { property: 'panel', value: 'górne rogi 16 · obramowanie #e5e5e5 bez dołu · 56 px od góry ekranu', source: 'Figma (odstęp: decyzja FE)' },
+          { property: 'tło', value: 'rgba(24, 24, 27, 0.4)', source: 'do potwierdzenia (w Figmie brak)' },
+          { property: 'trigger', value: 'otwarcie z akcji · zamykają: ×, klik w tło, Esc, „Anuluj”', source: 'decyzja FE' },
+          { property: 'prefers-reduced-motion', value: 'bez ruchu — panel i tło gasną i się pojawiają', source: 'a11y' },
+        ],
+        code: MODAL_MOBILE_CODE,
+        notes: (
+          <>
+            <p>
+              <strong>W Figmie modal nie ma animacji</strong> — wartości to propozycja we wspólnym stylu. Panel
+              pokonuje całą wysokość ekranu, dlatego ma dłuższe czasy (350 / 250 ms) przy tych samych krzywych.
+            </p>
+            <p>
+              Po otwarciu fokus przechodzi do modala, Tab zostaje w środku, a po zamknięciu fokus wraca do przycisku,
+              który go otworzył.
+            </p>
+          </>
+        ),
+        keywords: ['bottom sheet', 'mobile', 'telefon', 'wysunięcie', 'overlay', 'tło'],
+        preview: <ModalDemo mode="mobile" />,
+      },
+      {
+        id: 'modal-web',
+        title: 'Web — otwarcie i zamknięcie',
+        description:
+          'Na desktopie okno pojawia się na środku i dorasta z 98% — tak jak menu, ale od środka i bez przesunięcia. Tło pod nim ciemnieje razem z oknem.',
+        figmaNode: '803:728',
+        figmaUrl: DS_MODAL_FIGMA_URL,
+        params: [
+          { property: 'okno — opacity', value: '0 → 1 · 200 ms · ease-out', source: 'propozycja' },
+          { property: 'okno — scale', value: '0.98 → 1 · 250 ms · cubic-bezier(0.22, 1, 0.36, 1) · od środka', source: 'propozycja' },
+          { property: 'tło — opacity', value: '0 → 1 · 200 ms', source: 'propozycja' },
+          { property: 'zamknięcie', value: 'okno i tło do wartości startowych · 150 ms · cubic-bezier(0.4, 0, 1, 1)', source: 'propozycja' },
+          { property: 'okno', value: 'maks. 1469 × 776 px · rogi 16 · tytuł na środku · formularz maks. 720 px', source: 'Figma' },
+          { property: 'trigger', value: 'otwarcie z akcji · zamykają: ×, klik w tło, Esc, „Anuluj”', source: 'decyzja FE' },
+          { property: 'prefers-reduced-motion', value: 'bez skali, sam fade', source: 'a11y' },
+        ],
+        code: MODAL_DESKTOP_CODE,
+        notes: (
+          <p>
+            Duże okno przy skali 0.98 „dojeżdża” o kilka pikseli z każdej strony — wystarczy, żeby było widać, skąd się
+            wzięło. W wąskim oknie formularz przechodzi na jedną kolumnę (container query).
+          </p>
+        ),
+        keywords: ['desktop', 'web', 'dialog', 'okno', 'overlay', 'skala'],
+        preview: <ModalDemo mode="desktop" />,
+      },
+      {
+        id: 'modal-zapisywanie',
+        title: 'Zapisywanie — przyciski i loader',
+        description:
+          'Po „Zapisz” przyciski w stopce gasną, a na ich miejscu pojawia się loader z napisem „Zapisywanie zmian”. Gdy przyjdzie odpowiedź, modal zamyka się jak zwykle.',
+        figmaNode: '809:4137',
+        figmaUrl: DS_MODAL_FIGMA_URL,
+        params: [
+          { property: 'przyciski', value: 'opacity → 0 · 150 ms · ease-in', source: 'propozycja' },
+          { property: 'loader', value: 'opacity 0 → 1 (200 ms) · scale 0.98 → 1 (250 ms) · ease-out', source: 'propozycja' },
+          { property: 'wysokość stopki', value: 'desktop 69 → 88 px · 250 ms · ease-out · mobile bez zmiany (124 px)', source: 'Figma (wysokości) · propozycja (czas)' },
+          { property: 'obrót loadera', value: '360° · 1.2 s · liniowo · wokół środka okręgu łuków', source: 'propozycja' },
+          { property: 'w trakcie zapisu', value: 'formularz wyłączony (inert) · ×, tło i Esc nie zamykają', source: 'decyzja FE' },
+          { property: 'po odpowiedzi', value: 'zamknięcie jak w wariancie urządzenia', source: 'decyzja FE' },
+          { property: 'prefers-reduced-motion', value: 'zamiana bez skali, wysokość bez animacji; loader dalej się obraca', source: 'a11y' },
+        ],
+        code: MODAL_SAVING_CODE,
+        notes: (
+          <>
+            <p>
+              Figma: <code>BottomSheet / ActionButtons</code> — typ „buttons” i typ „loader”. Na mobile „Zapisz” jest
+              nad „Anuluj”, na desktopie „Anuluj” z lewej; kolejność Tab jest taka jak na ekranie.
+            </p>
+            <p>
+              Loader obraca się dalej przy <code>prefers-reduced-motion</code>, bo to informacja o stanie. Czytnik
+              ekranu dostaje „Zapisywanie zmian” z regionu <code>role=&quot;status&quot;</code>.
+            </p>
+          </>
+        ),
+        keywords: ['loader', 'spinner', 'zapisywanie', 'ładowanie', 'odpowiedź', 'action buttons', 'stopka'],
+        preview: <ModalDemo mode="saving" />,
+      },
+    ],
+  },
 ];
 
 /* ── Menu i indeks wyszukiwarki (liczone z treści) ────────────────────────── */
@@ -991,7 +1366,8 @@ export default function AnimacjePage() {
             <p className={styles.componentSummary}>{MOTION_STYLE_SUMMARY}</p>
             <p className={styles.meta}>
               Kod: <code>components/motion.ts</code> (gotowe przepisy: <code>popoverMotion</code>,{' '}
-              <code>swapMotion</code>, <code>viewMotion</code>, <code>moveTransition</code>) · zmienne CSS{' '}
+              <code>anchoredMotion</code>, <code>swapMotion</code>, <code>viewMotion</code>, <code>sheetMotion</code>,{' '}
+              <code>dialogMotion</code>, <code>overlayMotion</code>, <code>moveTransition</code>) · zmienne CSS{' '}
               <code>--motion-*</code> w <code>app/globals.css</code> · Toast ma własne wartości z Figmy.
             </p>
           </header>

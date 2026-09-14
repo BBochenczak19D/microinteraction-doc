@@ -1,0 +1,84 @@
+/* Tooltip — style z tokenów design systemu (strona „Tooltip”, node 671:207).
+ * Fallbacki = wartości z Figmy. */
+
+/* Element z tooltipem — nie zmienia układu, łapie najechanie i fokus */
+.trigger {
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.tooltip {
+  position: fixed;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  width: max-content;
+  max-width: min(320px, calc(100vw - 16px));
+  overflow: clip;
+  font-family: var(--family-body, 'Montserrat', system-ui, sans-serif);
+  font-size: var(--font-size-text-xs, 12px);
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--foregrounds-fg-base, #18181b);
+  background: var(--backgrounds-bg-component, #fafafa);
+  border-radius: var(--radius-8, 8px);
+  /* Light/Elevation/tooltip */
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.08),
+    0 2px 4px 0 rgba(0, 0, 0, 0.08),
+    0 4px 8px 0 rgba(0, 0, 0, 0.08);
+}
+
+/* Tooltip rośnie od krawędzi przy elemencie */
+.tooltip[data-side='top'] {
+  transform-origin: bottom center;
+}
+
+.tooltip[data-side='bottom'] {
+  transform-origin: top center;
+}
+
+.tooltip[data-side='left'] {
+  transform-origin: center right;
+}
+
+.tooltip[data-side='right'] {
+  transform-origin: center left;
+}
+
+/* Type=Text / Shortcut / Breadcrumbs — 4 px × 8 px */
+.text {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-6, 6px);
+  padding: var(--spacing-4, 4px) var(--spacing-8, 8px);
+}
+
+/* Kbd — klawisz w typie Shortcut; ⌘ spoza fontu bierze font systemowy */
+.kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  font-family: var(--family-body, 'Montserrat'), system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--foregrounds-fg-subtle, #52525b);
+  background: var(--backgrounds-bg-field-component, #ffffff);
+  border: 0.5px solid var(--borders-border-strong, #a1a1a1);
+  border-radius: var(--radius-4, 4px);
+}
+
+/* Horizontal Divider — kwadraty 1 px co 3 px */
+.divider {
+  flex-shrink: 0;
+  height: 1px;
+  background: repeating-linear-gradient(
+    to right,
+    var(--borders-border-strong, #a1a1a1) 0 1px,
+    transparent 1px 4px
+  );
+}

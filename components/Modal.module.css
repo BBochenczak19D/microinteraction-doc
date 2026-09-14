@@ -1,0 +1,343 @@
+/* Modal — style z tokenów design systemu (strona „Bottom sheet”, node 803:168).
+ * Fallbacki = wartości z Figmy. Czasy przejść: wspólne zmienne --motion-* (app/globals.css). */
+
+.layer {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  font-family: var(--family-body, 'Montserrat', system-ui, sans-serif);
+  color: var(--foregrounds-fg-base, #18181b);
+}
+
+/* Podgląd w dokumentacji: wewnątrz ramki zamiast na całym oknie */
+.layer[data-contained='true'] {
+  position: absolute;
+  z-index: 1;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+/* Przyciemnienie — w Figmie brak, kolor do potwierdzenia */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--backgrounds-bg-overlay, rgba(24, 24, 27, 0.4));
+}
+
+/* Device=Mobile — panel przy dolnej krawędzi, górne rogi 16, obramowanie bez dołu */
+.sheet {
+  position: absolute;
+  top: var(--modal-sheet-top, 64px);
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: clip;
+  background: var(--backgrounds-bg-field-component, #ffffff);
+  border: 1px solid var(--borders-border-base, #e5e5e5);
+  border-bottom: 0;
+  border-radius: 16px 16px 0 0;
+  outline: none;
+}
+
+/* Device=Dekstop — okno na środku, 1469 × 776, rogi 16 */
+.dialog {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  width: min(1469px, calc(100% - 48px));
+  height: min(776px, calc(100% - 48px));
+  margin: auto;
+  overflow: clip;
+  background: var(--backgrounds-bg-field-component, #ffffff);
+  border: 1px solid var(--borders-border-base, #e5e5e5);
+  border-radius: 16px;
+  outline: none;
+}
+
+/* ── Nagłówek: 16 px × 24 px, tytuł 16 Medium ── */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 16px 24px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--borders-border-base, #e5e5e5);
+}
+
+/* Desktop: tytuł na środku — z lewej niewidoczny odpowiednik przycisku zamknięcia */
+.headerSpacer {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+}
+
+.title {
+  min-width: 0;
+  margin: 0;
+  font-size: var(--font-size-text-base, 16px);
+  font-weight: 500;
+  line-height: normal;
+  color: var(--foregrounds-fg-base, #18181b);
+}
+
+.dialog .title {
+  flex: 1;
+  text-align: center;
+}
+
+.title em {
+  font-style: normal;
+  color: var(--foregrounds-fg-interactive, #3582ce);
+}
+
+.close {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  color: var(--icon-secondary, #1d293d);
+  background: var(--buttons-button-transparent, rgba(255, 255, 255, 0));
+  border: 0;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+  transition:
+    background-color var(--motion-duration-state, 150ms) var(--motion-ease-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    color var(--motion-duration-state, 150ms) var(--motion-ease-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+/* Pole kliknięcia 40 × 40 przy ikonie 24 px */
+.close::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+}
+
+.close:hover:not(:disabled) {
+  background: var(--buttons-button-transparent-hover, rgba(24, 24, 27, 0.06));
+}
+
+.close:disabled {
+  color: var(--foregrounds-fg-disabled, #a1a1aa);
+  cursor: default;
+}
+
+.close:focus-visible {
+  box-shadow: 0 0 0 2px #2563eb;
+}
+
+.closeIcon {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+/* ── Treść: 24 px, od dołu 64 px; na desktopie formularz maks. 720 px ── */
+
+.body {
+  flex: 1;
+  min-height: 0;
+  padding: 24px 24px 64px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  container-type: inline-size;
+}
+
+.body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.body::-webkit-scrollbar-thumb {
+  background: var(--gray-300, #d1d5dc);
+  border-radius: 3px;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  .body {
+    scrollbar-width: thin;
+    scrollbar-color: var(--gray-300, #d1d5dc) transparent;
+  }
+}
+
+.bodyContent {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* ── BottomSheet / ActionButtons — stan (przyciski albo loader) leży absolutnie,
+ * a wysokość stopki goni ten, który się pojawia ── */
+
+.footer {
+  position: relative;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: #ffffff;
+  border-radius: 8px 8px 0 0;
+  /* Obramowanie w środku (w Figmie nie zabiera miejsca) i cień w górę, na treść */
+  box-shadow:
+    inset 0 1px 0 var(--borders-border-base, #e5e5e5),
+    0 -4px 12px 0 rgba(0, 96, 191, 0.1),
+    0 -4px 54px 0 rgba(21, 138, 253, 0.13);
+  transition: height var(--motion-duration-enter, 250ms) var(--motion-ease-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.actions,
+.saving {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+}
+
+/* Type=Action buttons — mobile: jeden pod drugim (12 + 44 + 12 + 44 + 12 = 124 px) */
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+}
+
+/* Desktop: obok siebie, maks. 320 px każdy (13 + 44 + 12 = 69 px) */
+.dialog .actions {
+  flex-direction: row;
+  justify-content: center;
+  padding-top: 13px;
+}
+
+.dialog .actions .button {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 320px;
+}
+
+/* Type=Loader — mobile 124 px jak przyciski; desktop 13 + 42 + 21 + 12 ≈ 88 px */
+.saving {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 124px;
+  padding: 12px;
+}
+
+.dialog .saving {
+  min-height: 0;
+  padding-top: 13px;
+}
+
+.loader {
+  display: block;
+  flex-shrink: 0;
+  width: 42.2133px;
+  height: 42px;
+}
+
+/* Obrót wokół środka okręgu łuków (21.83, 19.57), nie środka ramki */
+.spin {
+  transform-box: view-box;
+  transform-origin: 21.83px 19.57px;
+  animation: spin var(--motion-loader-turn, 1200ms) linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.savingLabel {
+  font-size: var(--font-size-text-base, 16px);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--foregrounds-fg-base, #18181b);
+}
+
+/* Button — 44 px, tekst 18/20 SemiBold (Text Compact/txt-compact-xlarge) */
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-6, 6px);
+  width: 100%;
+  padding: 12px 24px;
+  font: inherit;
+  font-size: var(--font-size-text-lg, 18px);
+  font-weight: 600;
+  line-height: 20px;
+  white-space: nowrap;
+  border: 0;
+  border-radius: var(--radius-6, 6px);
+  outline: none;
+  cursor: pointer;
+  transition:
+    background-color var(--motion-duration-state, 150ms) var(--motion-ease-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    box-shadow var(--motion-duration-state, 150ms) var(--motion-ease-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+/* EstiGroup/Buttons/button-default; hover i wciśnięcie z tokenów interactive (w Figmie brak) */
+.primary {
+  color: var(--buttons-text-primary, #ffffff);
+  background: var(--estigroup-primary, #3582ce);
+  box-shadow:
+    inset 0 0.75px 0 0 rgba(255, 255, 255, 0.2),
+    0 0 0 1px var(--sky-600, #3582ce),
+    0 1px 2px 0 var(--sky-800, #00598a);
+}
+
+.primary:hover {
+  background: var(--backgrounds-bg-interactive-hover, #0069a8);
+}
+
+.primary:active {
+  background: var(--backgrounds-bg-interactive-pressed, #00598a);
+  transition-duration: 0s;
+}
+
+.secondary {
+  color: var(--buttons-text-secondary, #18181b);
+  background: var(--buttons-button-transparent, rgba(255, 255, 255, 0));
+}
+
+.secondary:hover {
+  background: var(--buttons-button-transparent-hover, rgba(24, 24, 27, 0.06));
+}
+
+.secondary:active {
+  background: rgba(24, 24, 27, 0.1);
+  transition-duration: 0s;
+}
+
+.button:focus-visible {
+  box-shadow:
+    0 0 0 2px #ffffff,
+    0 0 0 4px #2563eb;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer {
+    transition: none;
+  }
+}
